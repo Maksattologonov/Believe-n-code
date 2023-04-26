@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import django
@@ -5,30 +6,32 @@ import django
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
-from main.settings import TG_TOKEN
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
 
-from tariff.models import Telegram
+from telegram_app.models import Telegram
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def get_latest_record():
+    record = Telegram.objects.all().first()
+    return record.text, record.direction, record.group_link
+
+
 def start(update: Update, context: CallbackContext) -> None:
     user = update.message.from_user
-    record = Telegram.objects.all().first()
-    print(record)
+    text, direction, group_link = get_latest_record()
     logger.info("User %s started the conversation.", user.first_name)
     keyboard = [
         [
-            InlineKeyboardButton("Связаться с нами", url=str(record)),
-            InlineKeyboardButton("Программа рассрочки", url=str(record))
+            InlineKeyboardButton("Связаться с нами", url=str(direction)),
+            InlineKeyboardButton("Программа рассрочки", url=str(group_link))
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text(f"{record.text.format(user.first_name) if user.name else ''}!", reply_markup=reply_markup)
+    update.message.reply_text(f"{text.format(user.first_name)}", reply_markup=reply_markup)
 
 
 def echo(update: Update, context: CallbackContext) -> None:
@@ -40,7 +43,7 @@ def error(update: Update, context: CallbackContext) -> None:
 
 
 def main() -> None:
-    updater = Updater(TG_TOKEN)
+    updater = Updater('6241290167:AAGTyfCUyXU0Qsv_Sfkx55-tGMANqRfgcO0')
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))

@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'direction/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'media/d4ba956000788edd-s.p.ttf' %}">
+    {% endblock %}
+</head>
+<body class="body">
+{% block content %}
+<div class="wrapper">
+    <h1 class="title">Выберите направление</h1>
+    <div class="cards_wrapper">
+        <div class="card frontend">
+            <a href="{% url 'payment' %}">
+                <div class="content ">
+                    <p class="title_button">Frontend</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="card backend">
+            <a href="{% url 'payment' %}">
+                <div class="content ">
+                    <p class="title_button">Backend</p>
+                </div>
+            </a>
+        </div>
+        <div class="card ui_ux">
+            <a href="{% url 'payment' %}">
+                <div class="content">
+                    <p class="title_button">UI-UX</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
+

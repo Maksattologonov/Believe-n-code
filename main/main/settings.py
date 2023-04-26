@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tariff',
+    'payment_app',
+    'telegram_app',
 ]
 
 MIDDLEWARE = [
@@ -132,8 +133,8 @@ PAYMENT_VARIANTS = {
     "default": (
         "django_payments_provider.PayboxProvider",
         {
-            "secret": "your_secret",
-            "merchant_id": 1000000, # your merchant_id
+            "secret": "HDF&(*QAYF90yq12038fy80Y)AYF*)AG3t03",
+            "merchant_id": 2314680456, # your merchant_id
             "site_url": "https://your_site.dev",
             "testing_mode": 1, # enabled by default
         },
