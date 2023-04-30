@@ -15,3 +15,14 @@ class Tariff(models.Model):
     def __str__(self):
         return self.name
 
+
+class PayboxUrl(models.Model):
+    COURSES = [
+        ("Up", "Up"),
+        ("Pro", "Pro"),
+        ("Ultra", "Ultra")]
+    url = models.URLField(max_length=1000, verbose_name="Ссылки с Paybox оплаты")
+    type_of = models.CharField(max_length=20, choices=COURSES)
+
+    def __str__(self):
+        return self.type_of
