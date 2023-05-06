@@ -127,15 +127,20 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TG_TOKEN = os.getenv("TG_TOKEN")
+TG_TOKEN = config("TG_TOKEN")
 
-GROUP_CHAT_ID = os.getenv('GROUP_CHAT_ID')
+GROUP_CHAT_ID = config('GROUP_CHAT_ID')
+
+PAYBOX_SECRET_KEY = config('PAYBOX_SECRET_KEY')
+
+PAYBOX_MERCHANT_ID = config('PAYBOX_MERCHANT_ID')
 
 CORS_ALLOWED_ORIGINS = [
     "https://example.com",
     "https://sub.example.com",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://test-api.freedompay.money"
 ]
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

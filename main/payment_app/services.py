@@ -1,5 +1,5 @@
 from common.exceptions import ObjectNotFoundException
-from payment_app.models import PayboxUrl
+from .models import PayboxUrl
 
 
 class PayboxUrlsService:
