@@ -22,7 +22,7 @@ def calculate_pg_sig(params_dict, secret_key):
 
 
 params_dict = {
-    "pg_merchant_id": 544891,
+    "pg_merchant_id": config("PAYBOX_MERCHANT_ID"),
     "pg_amount": 1,
     "pg_currency": "KGS",
     "pg_order_id": 2,
