@@ -1,7 +1,7 @@
 import logging
 import os
-
 import django
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 def get_latest_record():
     record = Telegram.objects.all().first()
-    return record.chat_welcome_text, record.group_welcome_text, record.direction, record.installment_program, \
-        record.manager_telegram_username
+    return record.chat_welcome_text, record.group_welcome_text
 
 
 class TelegramBot:
@@ -30,16 +29,16 @@ class TelegramBot:
         user = update.message.from_user
 
         cls.update_user = update
-        text_1, text_2, direction, installment_program, manager_telegram_username = get_latest_record()
+        # text_1, text_2, direction, installment_program, manager_telegram_username = get_latest_record()
         logger.info("User %s started the conversation.", user.first_name)
-        keyboard = [
-            [
-                InlineKeyboardButton("Связаться с нами", url=str(direction)),
-                InlineKeyboardButton("Программа рассрочки", url=str(manager_telegram_username))
-            ]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text(f"{text_1.format(user.first_name)}", reply_markup=reply_markup)
+        # keyboard = [
+        #     [
+        #         InlineKeyboardButton("Связаться с нами", url=str(direction)),
+        #         InlineKeyboardButton("Программа рассрочки", url=str(manager_telegram_username))
+        #     ]
+        # ]
+        # reply_markup = InlineKeyboardMarkup(keyboard)
+        update.message.reply_text(f"Здравствуйте, дальше текст")
         context.bot.send_message(chat_id=936235158, text=f'Пользователь {user.username} начал общение')
 
     @classmethod
@@ -58,7 +57,7 @@ class TelegramBot:
 
     @classmethod
     def add_to_group(cls, update: Update, context: CallbackContext) -> None:
-        text_1, text_2, direction, installment_program, manager_telegram_username = get_latest_record()
+        text_1, text_2 = get_latest_record()
 
         new_members = update.message.new_chat_members
         for member in new_members:
@@ -72,7 +71,7 @@ class TelegramBot:
 
 def main() -> None:
     tg_bot = TelegramBot
-    updater = Updater(TG_TOKEN)
+    updater = Updater('6241290167:AAGTyfCUyXU0Qsv_Sfkx55-tGMANqRfgcO0')
     updater.start_polling(timeout=3600)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", tg_bot.start))
