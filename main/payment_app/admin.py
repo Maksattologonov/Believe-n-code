@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from payment_app.models import Tariff, PayboxUrl
+from .models import CoursePrompt, PayboxUrl, Course
 
 
-class TariffAdmin(admin.ModelAdmin):
+class CoursePromptAdmin(admin.ModelAdmin):
     pass
 
 
@@ -11,5 +11,10 @@ class UrlsAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(Tariff, TariffAdmin)
+class CourseAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(CoursePrompt, CoursePromptAdmin)
 admin.site.register(PayboxUrl, UrlsAdmin)
+admin.site.register(Course, CourseAdmin)

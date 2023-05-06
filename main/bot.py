@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 def get_latest_record():
     record = Telegram.objects.all().first()
-    return record.chat_welcome_text, record.group_welcome_text
+    return record.chat_welcome_text, record.group_welcome_text, record.direction, record.installment_program, \
+        record.manager_telegram_id
 
 
 class TelegramBot:
@@ -29,17 +30,18 @@ class TelegramBot:
         user = update.message.from_user
 
         cls.update_user = update
-        # text_1, text_2, direction, installment_program, manager_telegram_username = get_latest_record()
+        text_1, text_2, direction, installment_program, manager_telegram_id = get_latest_record()
         logger.info("User %s started the conversation.", user.first_name)
-        # keyboard = [
-        #     [
-        #         InlineKeyboardButton("Связаться с нами", url=str(direction)),
-        #         InlineKeyboardButton("Программа рассрочки", url=str(manager_telegram_username))
-        #     ]
-        # ]
-        # reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text(f"Здравствуйте, дальше текст")
-        context.bot.send_message(chat_id=936235158, text=f'Пользователь {user.username} начал общение')
+        keyboard = [
+            [
+                InlineKeyboardButton("Связаться с нами", url=str(direction)),
+                InlineKeyboardButton("Программа рассрочки", url=str(installment_program))
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        update.message.reply_text(f"{text_1.format(user.first_name)}", reply_markup=reply_markup)
+        print(manager_telegram_id, type(manager_telegram_id))
+        context.bot.send_message(chat_id=manager_telegram_id, text=f'Пользователь {user.username} начал общение')
 
     @classmethod
     def handle_message(cls, update, context):
@@ -47,17 +49,18 @@ class TelegramBot:
         message = update.message
         user = message.from_user
         reply_to_message = message.reply_to_message
+        text_1, text_2, direction, installment_program, manager_telegram_id = get_latest_record()
 
         if reply_to_message:
             context.bot.send_message(chat_id=reply_to_message['forward_from']['id'],
                                      text=text)
         else:
-            context.bot.forward_message(chat_id=936235158, from_chat_id=message.chat_id,
+            context.bot.forward_message(chat_id=manager_telegram_id, from_chat_id=message.chat_id,
                                         message_id=message.message_id)
 
     @classmethod
     def add_to_group(cls, update: Update, context: CallbackContext) -> None:
-        text_1, text_2 = get_latest_record()
+        text_1, text_2, direction, installment_program, manager_telegram_id = get_latest_record()
 
         new_members = update.message.new_chat_members
         for member in new_members:

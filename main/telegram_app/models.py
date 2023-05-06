@@ -26,7 +26,7 @@ class Telegram(models.Model):
                                                     'скобок пишется его, не забудьте оставить скобки')
     direction = models.ForeignKey(Mentor, on_delete=models.CASCADE, verbose_name="Направление")
     installment_program = models.TextField(verbose_name="Текст приветствия для программы рассрочки")
-    manager_telegram_id = models.IntegerField(verbose_name="ID менеджера телеграм")
+    manager_telegram_id = models.IntegerField(verbose_name="ID группы с менеджером телеграм")
 
     def __str__(self):
         return self.installment_program

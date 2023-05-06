@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from payment_app.models import PayboxUrl
+from .models import PayboxUrl
 
 
 class PayboxUrlsSerializer(serializers.ModelSerializer):
