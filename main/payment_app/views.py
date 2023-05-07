@@ -39,9 +39,10 @@ def paybox_callback(request):
         # amount = data['pg_amount']
         #
         # # Отправляем ответ PayBox
-        return HttpResponse('OK')
+        return HttpResponse('OK' + " " + data)
     else:
-        return HttpResponse(status=405)
+        data = 'CLEAR'
+        return HttpResponse('OK' + " " + data)
 
 
 class PayboxUrl(APIView):
