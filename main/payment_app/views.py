@@ -3,7 +3,9 @@ import hashlib
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, TemplateView
-from rest_framework import status
+from rest_framework import stat
+
+us
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -22,22 +24,23 @@ class DirectionView(ListView):
 @csrf_exempt
 def paybox_callback(request):
     if request.method == 'POST':
-        data = request.POST.copy()
+        data = request.POST
 
+        print(data)
         # Проверяем подпись запроса
-        sign = data.pop('pg_sig')[0]
-        secret_key = config('PAYBOX_SECRET_KEY')
-        str_to_sign = '&'.join([f'{key}={value}' for key, value in sorted(data.items())])
-        str_to_sign += f'&{secret_key}'
-        if sign != hashlib.md5(str_to_sign.encode()).hexdigest():
-            return HttpResponse('Ошибка проверки подписи')
-
-        # Обрабатываем данные запроса
-        status = data['pg_result']
-        order_id = data['pg_order_id']
-        amount = data['pg_amount']
-
-        # Отправляем ответ PayBox
+        # sign = data.pop('pg_sig')[0]
+        # secret_key = config('PAYBOX_SECRET_KEY')
+        # str_to_sign = '&'.join([f'{key}={value}' for key, value in sorted(data.items())])
+        # str_to_sign += f'&{secret_key}'
+        # if sign != hashlib.md5(str_to_sign.encode()).hexdigest():
+        #     return HttpResponse('Ошибка проверки подписи')
+        #
+        # # Обрабатываем данные запроса
+        # status = data['pg_result']
+        # order_id = data['pg_order_id']
+        # amount = data['pg_amount']
+        #
+        # # Отправляем ответ PayBox
         return HttpResponse('OK')
     else:
         return HttpResponse(status=405)
