@@ -29,11 +29,11 @@ def paybox_callback(request):
         pg_currency = data.get('pg_currency')
         return HttpResponse(pg_order_id, pg_payment_id, pg_amount, pg_currency, "POST")
     elif request.method == 'GET':
-        pg_order_id = request.GET.get('pg_order_id')
+        pg_salt = request.GET.get('pg_salt')
         pg_payment_id = request.GET.get('pg_payment_id')
         pg_sig = request.GET.get('pg_sig')
-        print(pg_order_id, pg_payment_id, pg_sig)
-        return HttpResponse("GET")
+        print(pg_salt, pg_payment_id, pg_sig)
+        return HttpResponse("GET-> " + pg_salt + " " + pg_payment_id + " " + pg_sig)
 
 
 class PayboxUrl(APIView):
