@@ -32,7 +32,7 @@ def paybox_callback(request):
         pg_salt = request.GET.get('pg_salt')
         pg_payment_id = request.GET.get('pg_payment_id')
         pg_sig = request.GET.get('pg_sig')
-        print(pg_salt, pg_payment_id, pg_sig)
+        print(request.GET)
         return HttpResponse("GET-> " + pg_salt + " " + pg_payment_id + " " + pg_sig)
 
 
