@@ -32,7 +32,8 @@ def paybox_callback(request):
         pg_order_id = request.GET.get('pg_order_id')
         pg_payment_id = request.GET.get('pg_payment_id')
         pg_sig = request.GET.get('pg_sig')
-        return HttpResponse(pg_order_id, pg_payment_id, pg_sig,  "GET")
+        print(pg_order_id, pg_payment_id, pg_sig)
+        return HttpResponse("GET")
 
 
 class PayboxUrl(APIView):
