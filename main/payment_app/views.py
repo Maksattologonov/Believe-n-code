@@ -3,9 +3,7 @@ import hashlib
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, TemplateView
-from rest_framework import stat
-
-us
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
