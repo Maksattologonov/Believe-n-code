@@ -10,6 +10,9 @@ __pycache__/
 pgdata
 pgdata/*
 docker-compose.yml
+.staticfiles/*
+.main/saticfiles/*
+*staticfiles/
 # Distribution / packaging
 .Python
 build/

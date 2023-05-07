@@ -23,23 +23,11 @@ class DirectionView(ListView):
 def paybox_callback(request):
     if request.method == 'POST':
         data = request.POST
-
-        print(data)
-        # Проверяем подпись запроса
-        # sign = data.pop('pg_sig')[0]
-        # secret_key = config('PAYBOX_SECRET_KEY')
-        # str_to_sign = '&'.join([f'{key}={value}' for key, value in sorted(data.items())])
-        # str_to_sign += f'&{secret_key}'
-        # if sign != hashlib.md5(str_to_sign.encode()).hexdigest():
-        #     return HttpResponse('Ошибка проверки подписи')
-        #
-        # # Обрабатываем данные запроса
-        # status = data['pg_result']
-        # order_id = data['pg_order_id']
-        # amount = data['pg_amount']
-        #
-        # # Отправляем ответ PayBox
-        return HttpResponse('OK' + " " + data)
+        pg_order_id = data.get('pg_order_id')
+        pg_payment_id = data.get('pg_payment_id')
+        pg_amount = data.get('pg_amount')
+        pg_currency = data.get('pg_currency')
+        return HttpResponse(pg_order_id, pg_payment_id, pg_amount, pg_currency)
     else:
         data = 'CLEAR'
         return HttpResponse('OK' + " " + data)
