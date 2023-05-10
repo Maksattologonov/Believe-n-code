@@ -35,6 +35,7 @@ class ResultCallback(View):
                                    amount=self.request.GET.get('pg_amount'),
                                    currency=self.request.GET.get('pg_currency'),
                                    description=self.request.GET.get('pg_description'),
+                                   payment_date=self.request.GET.get('pg_payment_date'),
                                    user_phone=self.request.GET.get('pg_user_phone'),
                                    email=self.request.GET.get('pg_user_contact_email'),
                                    signature=self.request.GET.get('pg_sig'))
