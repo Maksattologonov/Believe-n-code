@@ -1,8 +1,10 @@
+import re
+
 from common.exceptions import ObjectNotFoundException
-from .models import Tariff, PayboxSuccessPayment, Course
+from .models import Tariff, Course, PayboxSuccessPay
 
 
-class PayboxUrlsService:
+class PayboxService:
     model = Tariff
 
     @classmethod
@@ -14,11 +16,36 @@ class PayboxUrlsService:
 
 
 class PayboxCallbackService:
-    model = PayboxSuccessPayment
+    model = PayboxSuccessPay
 
     @classmethod
-    def save(cls, **filters):
-        return
+    def save(cls, payment_id, amount, currency, description, user_phone, email, signature):
+        cls.model.payment_id = payment_id
+        cls.model.amount = amount
+        cls.model.currency = currency
+        cls.model.description = description
+        cls.model.user_phone = user_phone
+        cls.model.email = email
+        cls.model.signature = signature
+
+        try:
+            cls.model.save()
+        except Exception as ex:
+            print(f"Ошибка сохранения: {str(ex)}")
+
+    @classmethod
+    def get(cls, **filters):
+        try:
+            return cls.model.objects.get(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Payment not found')
+
+    @staticmethod
+    def process_text(text):
+        cleaned_text = re.sub(r'[^a-zA-Z0-9]', '', text)
+        lowercase_text = cleaned_text.lower()
+
+        return lowercase_text
 
 
 class CourseService:

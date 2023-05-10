@@ -1,20 +1,13 @@
-import hashlib
-import json
-
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, TemplateView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from telegram_app.models import TelegramGroup
-from .models import Course
 from .serializers import TariffSerializer, CourseSerializer
-from .services import PayboxUrlsService, CourseService
-from decouple import config
+from .services import PayboxService, CourseService, PayboxCallbackService
 
 
 class CourseView(APIView):
@@ -29,34 +22,33 @@ class CourseView(APIView):
 
 class PayboxUrl(APIView):
     def get(self, *args, **kwargs):
-        queryset = PayboxUrlsService.get()
+        queryset = PayboxService.get()
         if queryset is not None:
             serializer = TariffSerializer(queryset, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
-class CheckCallback(APIView, View):
+class ResultCallback(View):
     template_name = 'payment_app/index.html'
-    # @csrf_exempt
-    # def get(self, *args, **kwargs):
-    #     pg_salt = self.request.query_params['pg_salt']
-    #     pg_payment_id = self.request.query_params['pg_payment_id']
-    #     pg_sig = self.request.query_params['pg_sig']
-    #
-    #     return HttpResponse("GET-> " + pg_salt + " " + pg_payment_id + " " + pg_sig)
+
+    def get(self, *args, **kwargs):
+        PayboxCallbackService.save(payment_id=self.request.query_params['pg_payment_id'],
+                                   amount=self.request.query_params['pg_amount'],
+                                   currency=self.request.query_params['pg_currency'],
+                                   description=self.request.query_params['pg_description'],
+                                   user_phone=self.request.query_params['pg_user_phone'],
+                                   email=self.request.query_params['pg_user_contact_email'],
+                                   signature=self.request.query_params['pg_sig'])
+        return HttpResponse("OK", status=status.HTTP_200_OK)
 
 
 class SuccessCallback(View):
-    template_name = 'payment_app/success.html'
-
     def get(self, *args, **kwargs):
-        data = kwargs.get('pg_description')
-        param = self.request.GET.get("pg_description")
-        response_data = {}
-        if param:
-            response_data = {'group_id': TelegramGroup.objects.values('group_link').get(id=1)['group_link']}
-        print('params:', param)
-        print("data: ", data)
-        response_data.update({'status': 'success'})
-        return render(self.request, template_name='payment_app/success.html', context=response_data)
+        try:
+            obj = PayboxCallbackService.get(payment_id=self.request.GET.get("pg_payment_id"))
+            data = TelegramGroup.objects.get()
 
+            response_data = ({'status': 'success'})
+            return render(self.request, template_name='payment_app/success.html', context=response_data)
+        except Exception as ex:
+            return render(self.request, template_name='payment_app/error.html', context={"error": str(ex)})

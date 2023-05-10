@@ -1,0 +1,65 @@
+@font-face {
+    font-family: __cyrillic;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/media/cyrillic.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: __latin;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/media/latin.woff2) format("woff2");
+}
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    left: 0;
+    top:0;
+
+    font-family: __latin, __cyrillic
+}
+
+ body{
+    max-width: 1745px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin: auto;
+    font-family: sans-serif;
+}
+
+.container{
+    width: 100%;
+    min-height: 100vh;
+    background-color: rgba(8, 12, 32, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    color: white;
+    padding: 10%;
+}
+.content{
+    text-align: center;
+}
+
+  h1 {
+    font-size: 100px;
+    margin: 0;
+  }
+
+  p {
+    font-size: 24px;
+    margin: 20px 0;
+  }
+
+  a {
+
+    color: rgb(235, 235, 235);
+    text-decoration: none;
+  }

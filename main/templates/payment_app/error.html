@@ -1,0 +1,24 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     {% block head %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error page</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'paybox_app/css/error.css' %}">
+    {% endblock %}
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>404</h1>
+            <p>Оопс! Страница, которую вы ищете, не существует. </p>
+            <a href="https://believencode.io/">Вернуться на главную страницу</a>
+            <h6>{{ error }}</h6>
+        </div>
+  </div>
+</body>
+</html>
