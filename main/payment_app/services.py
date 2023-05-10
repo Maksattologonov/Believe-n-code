@@ -20,16 +20,17 @@ class PayboxCallbackService:
 
     @classmethod
     def save(cls, payment_id, amount, currency, description, user_phone, email, signature):
-        cls.model.payment_id = payment_id
-        cls.model.amount = amount
-        cls.model.currency = currency
-        cls.model.description = description
-        cls.model.user_phone = user_phone
-        cls.model.email = email
-        cls.model.signature = signature
+        model = PayboxSuccessPay
+        model.payment_id = payment_id
+        model.amount = amount
+        model.currency = currency
+        model.description = description
+        model.user_phone = user_phone
+        model.email = email
+        model.signature = signature
 
         try:
-            cls.model.save()
+            model.save()
         except Exception as ex:
             print(f"Ошибка сохранения: {str(ex)}")
 
