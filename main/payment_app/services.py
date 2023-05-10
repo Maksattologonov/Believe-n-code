@@ -22,11 +22,11 @@ class PayboxCallbackService:
     def save(payment_id, amount, currency, description, user_phone, email, signature):
         model = PayboxSuccessPay()
         model.payment_id = payment_id
-        model.amount = amount
-        model.currency = currency
-        model.description = description
-        model.user_phone = user_phone
-        model.email = email
+        model.amount = amount if amount else 0
+        model.currency = currency if currency else " "
+        model.description = description if description else " "
+        model.user_phone = user_phone if user_phone else " "
+        model.email = email if email else " "
         model.signature = signature
 
         try:
