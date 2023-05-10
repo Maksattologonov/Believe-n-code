@@ -36,6 +36,18 @@ class Telegram(models.Model):
         verbose_name_plural = 'Тексты для Телеграма'
 
 
+class TelegramGroup(models.Model):
+    name = models.CharField(verbose_name="Название группы", max_length=255)
+    group_link = models.URLField(max_length=1000, verbose_name="ID группы телеграма")
+
+    class Meta:
+        verbose_name = "Группа телеграм"
+        verbose_name_plural = "Группы телеграм"
+
+    def __str__(self):
+        return self.name
+
+
 class TelegramUser(models.Model):
     username = models.CharField(max_length=100, verbose_name="Юзернейм")
     name = models.CharField(max_length=255, verbose_name="Имя пользователя")

@@ -1,9 +1,11 @@
 from django.urls import path, include
-from .views import DirectionView, paybox_callback, PayboxUrl
+from .views import CourseView, SuccessCallback, CheckCallback, PayboxUrl
 
 urlpatterns = [
-    path('directions/', DirectionView.as_view(), name='pay'),
-    path('paybox_callback', paybox_callback, name='paybox_callback'),
+    path('course/', CourseView.as_view(), name='course'),
     path('api/urls/', PayboxUrl.as_view(), name='urls'),
+    path('success_callback', SuccessCallback.as_view(), name='paybox_callback'),
+    path('error_callback', CheckCallback.as_view(), name='error_callback'),
+    # path('success_callback', PayboxCallback.as_view(), name='success_callback'),
 
 ]

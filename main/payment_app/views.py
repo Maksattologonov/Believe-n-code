@@ -1,44 +1,62 @@
 import hashlib
+import json
 
 from django.http import HttpResponse
+from django.shortcuts import render
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, TemplateView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import CoursePrompt
-from .serializers import PayboxUrlsSerializer
-from .services import PayboxUrlsService
+from telegram_app.models import TelegramGroup
+from .models import Course
+from .serializers import TariffSerializer, CourseSerializer
+from .services import PayboxUrlsService, CourseService
 from decouple import config
 
 
-class DirectionView(ListView):
-    model = CoursePrompt
-    template_name = 'payment_app/base.html'
-    context_object_name = 'directions'
-
-
-@csrf_exempt
-def paybox_callback(request):
-    if request.method == 'POST':
-        data = request.POST
-        pg_order_id = data.get('pg_order_id')
-        pg_payment_id = data.get('pg_payment_id')
-        pg_amount = data.get('pg_amount')
-        pg_currency = data.get('pg_currency')
-        return HttpResponse(pg_order_id, pg_payment_id, pg_amount, pg_currency, "POST")
-    elif request.method == 'GET':
-        pg_salt = request.GET.get('pg_salt')
-        pg_payment_id = request.GET.get('pg_payment_id')
-        pg_sig = request.GET.get('pg_sig')
-        print(request.GET)
-        return HttpResponse("GET-> " + pg_salt + " " + pg_payment_id + " " + pg_sig)
+class CourseView(APIView):
+    def get(self, *args, **kwargs):
+        if self.request.query_params:
+            queryset = CourseService.get(type__name=self.request.query_params['type'])
+        else:
+            queryset = CourseService.get()
+        serializer = CourseSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class PayboxUrl(APIView):
     def get(self, *args, **kwargs):
-        queryset = PayboxUrlsService.get(type_of=self.request.query_params['type'])
+        queryset = PayboxUrlsService.get()
         if queryset is not None:
-            serializer = PayboxUrlsSerializer(queryset, many=False)
+            serializer = TariffSerializer(queryset, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class CheckCallback(APIView, View):
+    template_name = 'payment_app/index.html'
+    # @csrf_exempt
+    # def get(self, *args, **kwargs):
+    #     pg_salt = self.request.query_params['pg_salt']
+    #     pg_payment_id = self.request.query_params['pg_payment_id']
+    #     pg_sig = self.request.query_params['pg_sig']
+    #
+    #     return HttpResponse("GET-> " + pg_salt + " " + pg_payment_id + " " + pg_sig)
+
+
+class SuccessCallback(View):
+    template_name = 'payment_app/success.html'
+
+    def get(self, *args, **kwargs):
+        data = kwargs.get('pg_description')
+        param = self.request.GET.get("pg_description")
+        response_data = {}
+        if param == 'test':
+            response_data = {'group_id': TelegramGroup.objects.values('group_link').get(id=1)['group_link']}
+        print('params:', param)
+        print("data: ", data)
+        response_data.update({'status': 'success'})
+        return render(self.request, template_name='payment_app/success.html', context=response_data)
+

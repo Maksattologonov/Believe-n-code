@@ -1,20 +1,15 @@
 from django.contrib import admin
 
-from .models import CoursePrompt, PayboxUrl, Course
-
-
-class CoursePromptAdmin(admin.ModelAdmin):
-    pass
-
-
-class UrlsAdmin(admin.ModelAdmin):
-    pass
+from .models import Course, Tariff
 
 
 class CourseAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(CoursePrompt, CoursePromptAdmin)
-admin.site.register(PayboxUrl, UrlsAdmin)
+class TariffAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Course, CourseAdmin)
+admin.site.register(Tariff, TariffAdmin)

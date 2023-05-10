@@ -1,9 +1,15 @@
 from rest_framework import serializers
 
-from .models import PayboxUrl
+from .models import Course, Tariff
 
 
-class PayboxUrlsSerializer(serializers.ModelSerializer):
+class TariffSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PayboxUrl
-        fields = ('url',)
+        model = Tariff
+        fields = ('name',)
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = '__all__'

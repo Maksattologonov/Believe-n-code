@@ -1,0 +1,45 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission page</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'paybox_app/css/styles.css' %}">
+    {% endblock %}
+    
+</head>
+<body>
+    <div class="header">
+            <h1> Cохраните эту страницу </h1>
+        </div>
+    <div class="container">
+        <div class="card telegram">
+            <div class="content">
+                <h3> Добавиться в телеграм группу </h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, adipisci vero possimus quod cupiditate amet?</p>
+                <a href="{{ group_id }}">
+                    <button class="button">
+                        Перейти в Telegram
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <div class="card z_class">
+            <div class="content">
+                <h3> Пройти регистрацию на курс </h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, adipisci vero possimus quod cupiditate amet?</p>
+                <a href="#"> 
+                    <button class="button">
+                        Перейти в Zen class
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
