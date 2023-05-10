@@ -50,5 +50,5 @@ class PayboxSuccessPay(models.Model):
         verbose_name_plural = 'Оплаты'
 
     def __str__(self):
-        return self.email
+        return self.user_phone
 
