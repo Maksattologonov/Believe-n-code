@@ -19,13 +19,12 @@ class PayboxCallbackService:
     model = PayboxSuccessPay
 
     @staticmethod
-    def save(payment_id, amount, currency, description, payment_date, user_phone, email, signature):
+    def save(payment_id, amount, currency, description, user_phone, email, signature):
         model = PayboxSuccessPay()
         model.payment_id = payment_id
         model.amount = amount
         model.currency = currency
         model.description = description
-        model.payment_date = payment_date
         model.user_phone = user_phone
         model.email = email
         model.signature = signature
