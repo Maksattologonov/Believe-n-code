@@ -32,13 +32,13 @@ class ResultCallback(View):
 
     def get(self, *args, **kwargs):
         print(self.request.query_params)
-        PayboxCallbackService.save(payment_id=self.request.query_params['pg_payment_id'],
-                                   amount=self.request.query_params['pg_amount'],
-                                   currency=self.request.query_params['pg_currency'],
-                                   description=self.request.query_params['pg_description'],
-                                   user_phone=self.request.query_params['pg_user_phone'],
-                                   email=self.request.query_params['pg_user_contact_email'],
-                                   signature=self.request.query_params['pg_sig'])
+        PayboxCallbackService.save(payment_id=self.request.GET.get('pg_payment_id'),
+                                   amount=self.request.GET.get('pg_amount'),
+                                   currency=self.request.GET.get('pg_currency'),
+                                   description=self.request.GET.get('pg_description'),
+                                   user_phone=self.request.GET.get('pg_user_phone'),
+                                   email=self.request.GET.get('pg_user_contact_email'),
+                                   signature=self.request.GET.get('pg_sig'))
         return HttpResponse("OK", status=status.HTTP_200_OK)
 
 
