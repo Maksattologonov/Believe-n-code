@@ -53,7 +53,7 @@ class SuccessCallback(View):
         data = kwargs.get('pg_description')
         param = self.request.GET.get("pg_description")
         response_data = {}
-        if param == 'test':
+        if param:
             response_data = {'group_id': TelegramGroup.objects.values('group_link').get(id=1)['group_link']}
         print('params:', param)
         print("data: ", data)
