@@ -43,7 +43,7 @@ class PayboxSuccessPay(models.Model):
     user_phone = models.CharField(verbose_name='Номер телефона', max_length=25)
     email = models.EmailField(verbose_name="Почта", max_length=255)
     signature = models.CharField(verbose_name="Подпись продукта")
-    order_id = models.ForeignKey(Course, verbose_name="ID Курса", on_delete=models.CASCADE)
+    order_id = models.IntegerField(verbose_name="ID Курса")
     type = models.CharField(max_length=255, verbose_name="Тариф")
     name = models.CharField(max_length=255, verbose_name="Название Курса")
 
