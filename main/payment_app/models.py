@@ -42,11 +42,14 @@ class Course(models.Model):
             'pg_description': self.description,
             'pg_salt': f'Оплата за {self.name}, по тарифу {self.type}',
             'pg_result_url': str(config('PAYBOX_RESULT_URL')),
-            'pg_testing_mode': int(config('PAYBOX_TESTING_MODE'))
+            'pg_testing_mode': int(config('PAYBOX_TESTING_MODE')),
+            'pg_param1': self.name,
+            'pg_param2': self.type.name
         }
         secret_key = str(config('PAYBOX_SECRET_KEY'))
         self.url = build_paybox_signature(params, secret_key)
-        super().save(*args, **kwargs)
+        if self.url:
+            super().save(*args, **kwargs)
 
 
 class PayboxSuccessPayment(models.Model):

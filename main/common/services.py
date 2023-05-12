@@ -10,14 +10,14 @@ def build_paybox_signature(params, secret_key):
     concatenated_param1 = 'init_payment.php;' + concatenated_params
     signature = hashlib.md5(concatenated_param1.encode()).hexdigest()
     params['pg_sig'] = signature
-
-    response = requests.post('https://api.freedompay.money/init_payment.php', data=params,
-                             headers={
-                                 'Cookie': '__cf_bm=RFP_MrdA8dgHnsAesnAObP_YHcaAcCFYKmyBGL4mKEU-1683876794-0-AVDWVEBu9ZWIj6RNIIF/h+jWgDqGGJ9ebPRmhFTpbKGlUnnnea5tbzKxUWSnSwCQJP4SDGvGNxw1NU6jVvVkAJI='})
+    print(concatenated_params)
+    response = requests.request("POST", 'https://api.freedompay.money/init_payment.php',
+                                data=params, files=[])
     if response.status_code == 200:
-        root = ET.fromstring(response.text)
         print(response.text)
-        pg_redirect_url = root.find('pg_redirect_url').text
-        return pg_redirect_url
+        root = ET.fromstring(response.text)
+        if root.find('pg_status').text == 'ok':
+            pg_redirect_url = root.find('pg_redirect_url').text
+            return pg_redirect_url
     else:
         print('Ошибка при отправке запроса:', response.status_code, response.text)
