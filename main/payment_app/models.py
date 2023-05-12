@@ -16,7 +16,6 @@ class Tariff(models.Model):
 
 
 class Course(models.Model):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, verbose_name="Название курса")
     type = models.ForeignKey(Tariff, verbose_name="Тариф курса", on_delete=models.CASCADE)
     description = models.TextField(verbose_name="Описание")
