@@ -33,9 +33,8 @@ class ResultCallback(View):
 
     def get(self, *args, **kwargs):
         if self.request.GET.get('pg_payment_id'):
-            for param, value in self.request.query_params.items():
-                print(f"{param}: {value}")
-            PayboxCallbackService.save(payment_id=self.request.GET.get('pg_payment_id'),
+            PayboxCallbackService.save(order_id=self.request.GET.get('pg_order_id'),
+                                       payment_id=self.request.GET.get('pg_payment_id'),
                                        amount=self.request.GET.get('pg_amount'),
                                        currency=self.request.GET.get('pg_currency'),
                                        description=self.request.GET.get('pg_description'),
@@ -50,10 +49,10 @@ class ResultCallback(View):
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
         try:
-            obj = PayboxCallbackService.get(payment_id=self.request.GET.get("pg_payment_id"))
-            data = TelegramGroup.objects.get()
-
-            response_data = ({'status': 'success'})
-            return render(self.request, template_name='payment_app/success.html', context=response_data)
+            # obj = PayboxCallbackService.get(payment_id=self.request.GET.get("pg_payment_id"))
+            # data = TelegramGroup.objects.get()
+            #
+            # response_data = ({'status': 'success'})
+            return render(self.request, template_name='payment_app/success.html')
         except Exception as ex:
             return render(self.request, template_name='payment_app/error.html', context={"error": str(ex)})
