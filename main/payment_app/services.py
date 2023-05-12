@@ -21,7 +21,7 @@ class PayboxCallbackService:
     @staticmethod
     def save(order_id, payment_id, amount, currency, description, user_phone, email, signature):
         model = PayboxSuccessPay()
-        obj = Course.objects.get(id=order_id)
+        obj = CourseService.get(id=order_id)
         model.order_id = obj.id
         model.type = obj.type.name
         model.name = obj.name
@@ -59,7 +59,6 @@ class CourseService:
     @classmethod
     def get(cls, **filters):
         try:
-
             return cls.models.objects.filter(**filters)
         except cls.models.DoesNotExist:
             raise ObjectNotFoundException('Courses not found')
