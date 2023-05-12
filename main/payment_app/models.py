@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from decouple import config
 
+from common.exceptions import IncorrectCodeException
 from common.services import build_paybox_signature
 
 
@@ -35,21 +36,25 @@ class Course(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        params = {
-            'pg_order_id': self.pk,
-            'pg_merchant_id': int(config('PAYBOX_MERCHANT_ID')),
-            'pg_amount': self.new_price,
-            'pg_description': self.description,
-            'pg_salt': f'Оплата за {self.name}, по тарифу {self.type}',
-            'pg_result_url': str(config('PAYBOX_RESULT_URL')),
-            'pg_testing_mode': int(config('PAYBOX_TESTING_MODE')),
-            'pg_param1': self.name,
-            'pg_param2': self.type.name
-        }
-        secret_key = str(config('PAYBOX_SECRET_KEY'))
-        self.url = build_paybox_signature(params, secret_key)
-        if self.url:
+        try:
             super().save(*args, **kwargs)
+            self.refresh_from_db()
+            params = {
+                'pg_order_id': self.id,
+                'pg_merchant_id': int(config('PAYBOX_MERCHANT_ID')),
+                'pg_amount': self.new_price,
+                'pg_description': self.description,
+                'pg_salt': f'Оплата за {self.name}, по тарифу {self.type}',
+                'pg_result_url': str(config('PAYBOX_RESULT_URL')),
+                'pg_testing_mode': int(config('PAYBOX_TESTING_MODE')),
+                'pg_param1': self.name,
+                'pg_param2': self.type.name
+            }
+            secret_key = str(config('PAYBOX_SECRET_KEY'))
+            self.url = build_paybox_signature(params, secret_key)
+            super().save(*args, **kwargs)
+        except Exception as ex:
+            raise IncorrectCodeException(ex)
 
 
 class PayboxSuccessPayment(models.Model):
