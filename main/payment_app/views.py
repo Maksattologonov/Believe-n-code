@@ -33,7 +33,8 @@ class ResultCallback(View):
 
     def get(self, *args, **kwargs):
         if self.request.GET.get('pg_payment_id'):
-            print(self.request.GET.get())
+            for param, value in self.request.query_params.items():
+                print(f"{param}: {value}")
             PayboxCallbackService.save(payment_id=self.request.GET.get('pg_payment_id'),
                                        amount=self.request.GET.get('pg_amount'),
                                        currency=self.request.GET.get('pg_currency'),
