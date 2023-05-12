@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -31,14 +32,18 @@ class PayboxUrl(APIView):
 class ResultCallback(View):
 
     def get(self, *args, **kwargs):
-        PayboxCallbackService.save(payment_id=self.request.GET.get('pg_payment_id'),
-                                   amount=self.request.GET.get('pg_amount'),
-                                   currency=self.request.GET.get('pg_currency'),
-                                   description=self.request.GET.get('pg_description'),
-                                   user_phone=self.request.GET.get('pg_user_phone'),
-                                   email=self.request.GET.get('pg_user_contact_email'),
-                                   signature=self.request.GET.get('pg_sig'))
-        return HttpResponse("OK", status=status.HTTP_200_OK)
+        if self.request.GET.get('pg_payment_id'):
+            print(self.request.GET.get())
+            PayboxCallbackService.save(payment_id=self.request.GET.get('pg_payment_id'),
+                                       amount=self.request.GET.get('pg_amount'),
+                                       currency=self.request.GET.get('pg_currency'),
+                                       description=self.request.GET.get('pg_description'),
+                                       user_phone=self.request.GET.get('pg_user_phone'),
+                                       email=self.request.GET.get('pg_user_contact_email'),
+                                       signature=self.request.GET.get('pg_sig'))
+            return HttpResponse(status=status.HTTP_200_OK)
+        else:
+            return render(request=self.request, template_name="payment_app/error.html", context={'error': 'ERROR'})
 
 
 class SuccessCallback(View):

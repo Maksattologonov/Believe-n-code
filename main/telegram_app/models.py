@@ -19,7 +19,7 @@ class Mentor(models.Model):
 
 class Telegram(models.Model):
     chat_welcome_text = models.TextField(verbose_name="Текст приветствия в личных сообщениях",
-                                         help_text='Внимание! при отправке текста пользователю внутри {} '
+                                         help_text='Внимание! при отправке текста пользователю внутри  '
                                                    'скобок пишется его, не забудьте оставить скобки')
     group_welcome_text = models.TextField(verbose_name="Текст приветствия в группе",
                                           help_text='Внимание! при отправке текста пользователю внутри {} '
