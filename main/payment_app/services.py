@@ -22,7 +22,7 @@ class PayboxCallbackService:
     def save(order_id, payment_id, amount, currency, description, user_phone, email, signature):
         model = PayboxSuccessPay()
         obj = Course.objects.get(pk=order_id)
-        model.order_id = obj.id
+        model.order_id = obj.pk
         model.type = obj.type.name
         model.name = obj.name
         model.payment_id = payment_id
