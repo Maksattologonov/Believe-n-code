@@ -4,7 +4,7 @@ from .models import Course, Tariff, PayboxSuccessPay
 
 
 class CourseAdmin(admin.ModelAdmin):
-    readonly_fields = ('id', 'url')
+    pass
 
 
 class TariffAdmin(admin.ModelAdmin):

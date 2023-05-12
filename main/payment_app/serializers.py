@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
+from common.services import build_paybox_signature
 from .models import Course, Tariff
+
+from decouple import config
 
 
 class TariffSerializer(serializers.ModelSerializer):
@@ -10,6 +13,23 @@ class TariffSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        params = {
+            'pg_order_id': obj.id,
+            'pg_merchant_id': int(config('PAYBOX_MERCHANT_ID')),
+            'pg_amount': obj.new_price,
+            'pg_description': obj.description,
+            'pg_salt': f'Оплата за {obj.name}, по тарифу {obj.type}',
+            'pg_result_url': str(config('PAYBOX_RESULT_URL')),
+            'pg_testing_mode': int(config('PAYBOX_TESTING_MODE')),
+            'pg_param1': obj.name,
+            'pg_param2': obj.type.name
+        }
+        secret_key = str(config('PAYBOX_SECRET_KEY'))
+        return build_paybox_signature(params, secret_key)
+
     class Meta:
         model = Course
         fields = '__all__'
