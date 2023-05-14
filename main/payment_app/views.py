@@ -49,8 +49,9 @@ class ResultCallback(View):
 
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
-        if PayboxSuccessPay.objects.filter(payment_id=self.request.GET.get("pg_payment_id")):
-            print([i for i in self.request.GET.get()])
+        instance = PayboxSuccessPay.objects.filter(order_id=self.request.GET.get("pg_order_id"))
+        if instance:
+            print(instance)
             data = TelegramGroup.objects.filter()
             response_data = ({'data': 'success'})
         return render(self.request, template_name='payment_app/success.html')
