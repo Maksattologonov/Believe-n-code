@@ -10,11 +10,9 @@ def build_paybox_signature(params, secret_key):
     concatenated_param1 = 'init_payment.php;' + concatenated_params
     signature = hashlib.md5(concatenated_param1.encode()).hexdigest()
     params['pg_sig'] = signature
-    print(concatenated_params)
     response = requests.request("POST", 'https://api.freedompay.money/init_payment.php',
                                 data=params, files=[])
     if response.status_code == 200:
-        print(response.text)
         root = ET.fromstring(response.text)
         if root.find('pg_status').text == 'ok':
             pg_redirect_url = root.find('pg_redirect_url').text

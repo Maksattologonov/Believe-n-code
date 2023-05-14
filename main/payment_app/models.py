@@ -46,6 +46,7 @@ class PayboxSuccessPay(models.Model):
     order_id = models.IntegerField(verbose_name="ID Курса")
     type = models.CharField(max_length=255, verbose_name="Тариф")
     name = models.CharField(max_length=255, verbose_name="Название Курса")
+    status = models.BooleanField(verbose_name="Статус оплаты", default=False)
 
     class Meta:
         verbose_name = 'Оплата'

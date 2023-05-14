@@ -49,10 +49,12 @@ class ResultCallback(View):
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
         try:
-            # obj = PayboxCallbackService.get(payment_id=self.request.GET.get("pg_payment_id"))
-            # data = TelegramGroup.objects.get()
-            #
-            # response_data = ({'status': 'success'})
+            obj = PayboxCallbackService.get(payment_id=self.request.GET.get("pg_payment_id"))
+            obj.status = True
+            obj.save()
+            data = TelegramGroup.objects.get()
+
+            response_data = ({'status': 'success'})
             return render(self.request, template_name='payment_app/success.html')
         except Exception as ex:
             return render(self.request, template_name='payment_app/error.html', context={"error": str(ex)})

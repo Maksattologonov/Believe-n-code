@@ -21,9 +21,6 @@ class Telegram(models.Model):
     chat_welcome_text = models.TextField(verbose_name="Текст приветствия в личных сообщениях",
                                          help_text='Внимание! при отправке текста пользователю внутри  '
                                                    'скобок пишется его, не забудьте оставить скобки')
-    group_welcome_text = models.TextField(verbose_name="Текст приветствия в группе",
-                                          help_text='Внимание! при отправке текста пользователю внутри {} '
-                                                    'скобок пишется его, не забудьте оставить скобки')
     direction = models.ForeignKey(Mentor, on_delete=models.CASCADE, verbose_name="Направление")
     installment_program = models.TextField(verbose_name="Текст приветствия для программы рассрочки")
     manager_telegram_id = models.IntegerField(verbose_name="ID группы с менеджером телеграм")
@@ -38,6 +35,9 @@ class Telegram(models.Model):
 
 class TelegramGroup(models.Model):
     name = models.CharField(verbose_name="Название группы", max_length=255)
+    group_welcome_text = models.TextField(verbose_name="Текст приветствия в группе",
+                                          help_text='Внимание! при отправке текста пользователю внутри {} '
+                                                    'скобок пишется его, не забудьте оставить скобки')
     group_link = models.URLField(max_length=1000, verbose_name="ID группы телеграма")
 
     class Meta:
