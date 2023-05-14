@@ -9,7 +9,7 @@ from decouple import config
 class TariffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tariff
-        fields = ('name',)
+        fields = "__all__"
 
 
 class CourseSerializer(serializers.ModelSerializer):
