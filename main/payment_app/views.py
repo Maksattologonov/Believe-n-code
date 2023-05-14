@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from telegram_app.models import TelegramGroup
+from .models import PayboxSuccessPay
 from .serializers import TariffSerializer, CourseSerializer
 from .services import PayboxService, CourseService, PayboxCallbackService
 
@@ -48,13 +49,10 @@ class ResultCallback(View):
 
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
-        try:
-            obj = PayboxCallbackService.get(payment_id=self.request.GET.get("pg_payment_id"))
-            obj.status = True
-            obj.save()
-            data = TelegramGroup.objects.get()
-
-            response_data = ({'status': 'success'})
-            return render(self.request, template_name='payment_app/success.html')
-        except Exception as ex:
-            return render(self.request, template_name='payment_app/error.html', context={"error": str(ex)})
+        if PayboxSuccessPay.objects.filter(payment_id=self.request.GET.get("pg_payment_id")):
+            print([i for i in self.request.GET.get()])
+            data = TelegramGroup.objects.filter()
+            response_data = ({'data': 'success'})
+        return render(self.request, template_name='payment_app/success.html')
+        # except Exception as ex:
+        #     return render(self.request, template_name='payment_app/error.html', context={"error": str(ex)})
