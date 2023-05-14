@@ -6,6 +6,9 @@ from django.utils import timezone
 
 class Tariff(models.Model):
     name = models.CharField(max_length=50, verbose_name="Название тарифа")
+    description = models.TextField(verbose_name="Описание")
+    old_price = models.IntegerField(verbose_name="Старая цена")
+    new_price = models.IntegerField(verbose_name="Новая цена")
 
     class Meta:
         verbose_name = "Тариф"
@@ -18,9 +21,6 @@ class Tariff(models.Model):
 class Course(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название курса")
     type = models.ForeignKey(Tariff, verbose_name="Тариф курса", on_delete=models.CASCADE)
-    description = models.TextField(verbose_name="Описание")
-    old_price = models.IntegerField(verbose_name="Старая цена")
-    new_price = models.IntegerField(verbose_name="Новая цена")
 
     class Meta:
         verbose_name = "Курс"
