@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Permission page</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'paybox_app/css/styles.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'payment_app/css/styles.css' %}">
     {% endblock %}
     
 </head>
@@ -15,6 +15,7 @@
     <div class="header">
             <h1> Cохраните эту страницу </h1>
         </div>
+    {% block content %}
     <div class="container">
         <div class="card telegram">
             <div class="content">
@@ -32,7 +33,7 @@
             <div class="content">
                 <h3> Пройти регистрацию на курс </h3>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, adipisci vero possimus quod cupiditate amet?</p>
-                <a href="#"> 
+                <a href="{{ data.lms_url }}">
                     <button class="button">
                         Перейти в Zen class
                     </button>
@@ -40,5 +41,6 @@
             </div>
         </div>
     </div>
+{% endblock %}
 </body>
 </html>

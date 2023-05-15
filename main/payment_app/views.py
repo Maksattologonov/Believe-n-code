@@ -7,9 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from telegram_app.models import TelegramGroup
-from .models import PayboxSuccessPay
-from .serializers import TariffSerializer, CourseSerializer
-from .services import PayboxService, CourseService, PayboxCallbackService
+from .models import PayboxSuccessPay, Course
+from .serializers import TariffSerializer, CourseSerializer, TemporaryAccessSerializer
+from .services import PayboxService, CourseService, PayboxCallbackService, TemporaryAccessService
 
 
 class CourseView(APIView):
@@ -49,11 +49,25 @@ class ResultCallback(View):
 
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
-        instance = PayboxSuccessPay.objects.filter(order_id=self.request.GET.get("pg_order_id"))
-        if instance:
-            print(instance)
-            data = TelegramGroup.objects.filter()
-            response_data = ({'data': 'success'})
-        return render(self.request, template_name='payment_app/success.html')
-        # except Exception as ex:
-        #     return render(self.request, template_name='payment_app/error.html', context={"error": str(ex)})
+
+        if self.request.GET.get("pg_payment_id"):
+            instance = PayboxSuccessPay.objects.get(payment_id=self.request.GET.get("pg_payment_id"),
+                                                    order_id=self.request.GET.get('pg_order_id'))
+            if instance:
+                print(instance.name, instance.type)
+                data = Course.objects.get(name=instance.name, type__name=instance.type)
+                response_data = ({'data': data})
+                return render(self.request, template_name='payment_app/success.html', context=response_data)
+        else:
+            return render(self.request, template_name='payment_app/error.html')
+
+
+class TemporaryAccessAPIView(APIView):
+    def post(self, *args, **kwargs):
+        serializer = TemporaryAccessSerializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        TemporaryAccessService.create_access(name=serializer.validated_data.get('name'),
+                                             email=serializer.validated_data.get('email'),
+                                             telegram_number=serializer.validated_data.get('telegram_number'),
+                                             tariff=serializer.validated_data.get('tariff'))
+        return Response(data={'message': 'Access successfully created'}, status=status.HTTP_201_CREATED)

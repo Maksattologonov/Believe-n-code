@@ -1,13 +1,11 @@
 from django.db import models
 
+from payment_app.models import Course, Tariff
+
 
 class Mentor(models.Model):
-    COURSES = [
-        ("Front-end", "Front-end"),
-        ("Back-end", "Back-end"),
-        ("Design", "Design")]
     telegram_username = models.CharField(max_length=255, verbose_name="Телеграм юзернейм")
-    type = models.CharField(max_length=255, choices=COURSES, verbose_name="Направление")
+    direction = models.ForeignKey(Tariff, max_length=255, on_delete=models.CASCADE, verbose_name="Направление")
 
     def __str__(self):
         return self.telegram_username
@@ -22,6 +20,7 @@ class Telegram(models.Model):
                                          help_text='Внимание! при отправке текста пользователю внутри  '
                                                    'скобок пишется его, не забудьте оставить скобки')
     direction = models.ForeignKey(Mentor, on_delete=models.CASCADE, verbose_name="Направление")
+    type = models.ForeignKey(Course, max_length=255, on_delete=models.CASCADE, verbose_name="Направление")
     installment_program = models.TextField(verbose_name="Текст приветствия для программы рассрочки")
     manager_telegram_id = models.IntegerField(verbose_name="ID группы с менеджером телеграм")
 
@@ -38,6 +37,7 @@ class TelegramGroup(models.Model):
     group_welcome_text = models.TextField(verbose_name="Текст приветствия в группе",
                                           help_text='Внимание! при отправке текста пользователю внутри {} '
                                                     'скобок пишется его, не забудьте оставить скобки')
+    type = models.ForeignKey(Course, max_length=255, on_delete=models.CASCADE, verbose_name="Направление")
     group_link = models.URLField(max_length=1000, verbose_name="ID группы телеграма")
 
     class Meta:

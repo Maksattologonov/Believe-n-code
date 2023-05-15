@@ -1,0 +1,24 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission page</title>
+    {% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'payment_app/css/lms.css' %}">
+    {% endblock %}
+
+</head>
+<body>
+<div class="container">
+  <h1 class="title">Рестрация на курс (zenclass)</h1>
+
+  <div class="form">
+    <iframe src="https://believencode.zenclass.ru/embed/student/register/b3d4233b-2701-4fd5-b12d-4fc4bf9a8def" style="border:0; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08); border-radius: 4px;" width="320" height="464" scrolling="no"></iframe>
+  </div>
+</div>
+</body>
+</html>

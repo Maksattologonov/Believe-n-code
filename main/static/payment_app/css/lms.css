@@ -1,0 +1,37 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    left: 0;
+    top:0;
+}
+
+body{
+    max-width: 1745px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin: auto;
+}
+
+.container{
+    width: 100%;
+    min-height: 100vh;
+    background-color: rgba(8, 12, 32, 1);
+    color: white;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 5% 0;
+    text-align: center;
+}
+.title{
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 100px
+}
+.form{
+    width: 350px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+}

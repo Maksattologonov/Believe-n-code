@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from common.services import build_paybox_signature
-from .models import Course, Tariff
+from .models import Course, Tariff, TemporaryAccess
 
 from decouple import config
 
@@ -33,3 +33,10 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
+
+
+class TemporaryAccessSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    email = serializers.CharField()
+    telegram_number = serializers.CharField()
+    tariff = serializers.CharField()

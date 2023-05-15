@@ -1,7 +1,9 @@
 import re
 
-from common.exceptions import ObjectNotFoundException
-from .models import Tariff, Course, PayboxSuccessPay
+from django.db import IntegrityError
+
+from common.exceptions import ObjectNotFoundException, UniqueObjectException
+from .models import Tariff, Course, PayboxSuccessPay, TemporaryAccess
 
 
 class PayboxService:
@@ -62,3 +64,27 @@ class CourseService:
             return cls.models.objects.filter(**filters)
         except cls.models.DoesNotExist:
             raise ObjectNotFoundException('Courses not found')
+
+
+class TemporaryAccessService:
+    model = TemporaryAccess
+
+    @classmethod
+    def get(cls, **filters):
+        try:
+            obj = cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Object not found')
+
+    @classmethod
+    def create_access(cls, name: str, email: str, telegram_number: str, tariff: str) -> TemporaryAccess:
+        try:
+            instance = Tariff.objects.get(name=tariff)
+            if instance:
+                new_event = cls.model.objects.create(name=name, email=email, telegram_number=telegram_number,
+                                                     tariff=instance)
+                return new_event
+        except Tariff.DoesNotExist:
+            raise ObjectNotFoundException('Tariff not found')
+        except IntegrityError:
+            raise UniqueObjectException('Unique error')

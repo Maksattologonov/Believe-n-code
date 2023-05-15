@@ -21,6 +21,7 @@ class Tariff(models.Model):
 class Course(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название курса")
     type = models.ForeignKey(Tariff, verbose_name="Тариф курса", on_delete=models.CASCADE)
+    lms_url = models.URLField(verbose_name="Ссылка на курс", max_length=1500)
 
     class Meta:
         verbose_name = "Курс"
@@ -55,3 +56,17 @@ class PayboxSuccessPay(models.Model):
     def __str__(self):
         return self.user_phone
 
+
+class TemporaryAccess(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Имя пользователя")
+    email = models.EmailField(max_length=255, verbose_name="Email", unique=True)
+    telegram_number = models.CharField(max_length=20, verbose_name='Телеграм номер', unique=True)
+    tariff = models.ForeignKey(Tariff, on_delete=models.CASCADE, verbose_name='Тариф')
+    start_date = models.DateField(default=timezone.now, verbose_name='Дата начала доступа')
+
+    class Meta:
+        verbose_name = 'Временный доступ'
+        verbose_name_plural = 'Временные доступы'
+
+    def __str__(self):
+        return self.name

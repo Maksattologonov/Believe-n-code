@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Course, Tariff, PayboxSuccessPay
+from .models import Course, Tariff, PayboxSuccessPay, TemporaryAccess
 
 
 class CourseAdmin(admin.ModelAdmin):
@@ -15,6 +15,11 @@ class PayboxSuccessPayAdmin(admin.ModelAdmin):
     pass
 
 
+class TemporaryAccessAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Tariff, TariffAdmin)
 admin.site.register(PayboxSuccessPay, PayboxSuccessPayAdmin)
+admin.site.register(TemporaryAccess, TemporaryAccessAdmin)
