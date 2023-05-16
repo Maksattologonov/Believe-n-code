@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import django
@@ -11,6 +12,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
 
 from telegram_app.models import Telegram
+from payment_app.models import TemporaryAccess
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)

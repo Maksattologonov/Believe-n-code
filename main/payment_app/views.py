@@ -66,8 +66,11 @@ class TemporaryAccessAPIView(APIView):
     def post(self, *args, **kwargs):
         serializer = TemporaryAccessSerializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
-        TemporaryAccessService.create_access(name=serializer.validated_data.get('name'),
+        url = TemporaryAccessService.create_access(name=serializer.validated_data.get('name'),
                                              email=serializer.validated_data.get('email'),
                                              telegram_number=serializer.validated_data.get('telegram_number'),
-                                             tariff=serializer.validated_data.get('tariff'))
-        return Response(data={'message': 'Access successfully created'}, status=status.HTTP_201_CREATED)
+                                             tariff=serializer.validated_data.get('tariff'),
+                                             course=serializer.validated_data.get('course'))
+        if url:
+            return Response(data=url, status=status.HTTP_201_CREATED)
+

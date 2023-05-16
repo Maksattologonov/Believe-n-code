@@ -22,6 +22,7 @@ class Course(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название курса")
     type = models.ForeignKey(Tariff, verbose_name="Тариф курса", on_delete=models.CASCADE)
     lms_url = models.URLField(verbose_name="Ссылка на курс", max_length=1500)
+    temporary_lms_url = models.URLField(verbose_name="Временная ссылка на курс", max_length=1500)
 
     class Meta:
         verbose_name = "Курс"
@@ -62,7 +63,8 @@ class TemporaryAccess(models.Model):
     email = models.EmailField(max_length=255, verbose_name="Email", unique=True)
     telegram_number = models.CharField(max_length=20, verbose_name='Телеграм номер', unique=True)
     tariff = models.ForeignKey(Tariff, on_delete=models.CASCADE, verbose_name='Тариф')
-    start_date = models.DateField(default=timezone.now, verbose_name='Дата начала доступа')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс')
+    start_date = models.DateTimeField(default=timezone.now, verbose_name='Дата начала доступа')
 
     class Meta:
         verbose_name = 'Временный доступ'

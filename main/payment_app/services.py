@@ -2,7 +2,7 @@ import re
 
 from django.db import IntegrityError
 
-from common.exceptions import ObjectNotFoundException, UniqueObjectException
+from common.exceptions import ObjectNotFoundException, UniqueObjectException, TypeErrorException
 from .models import Tariff, Course, PayboxSuccessPay, TemporaryAccess
 
 
@@ -77,14 +77,19 @@ class TemporaryAccessService:
             raise ObjectNotFoundException('Object not found')
 
     @classmethod
-    def create_access(cls, name: str, email: str, telegram_number: str, tariff: str) -> TemporaryAccess:
+    def create_access(cls, name: str, email: str, telegram_number: str, tariff: str, course: str) -> TemporaryAccess:
         try:
-            instance = Tariff.objects.get(name=tariff)
-            if instance:
+            tariff_instance = Tariff.objects.get(name=tariff)
+            course_instance = Course.objects.get(name=course, type=tariff_instance.id)
+            if tariff_instance and course_instance:
                 new_event = cls.model.objects.create(name=name, email=email, telegram_number=telegram_number,
-                                                     tariff=instance)
-                return new_event
+                                                     tariff=tariff_instance, course=course_instance)
+                return course_instance.temporary_lms_url
+            else:
+                raise TypeErrorException("Bad credentials")
         except Tariff.DoesNotExist:
             raise ObjectNotFoundException('Tariff not found')
+        except Course.DoesNotExist:
+            raise ObjectNotFoundException('Course not found')
         except IntegrityError:
             raise UniqueObjectException('Unique error')

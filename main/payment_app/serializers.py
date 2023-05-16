@@ -32,7 +32,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = ('id', 'name', 'url', 'temporary_lms_url')
 
 
 class TemporaryAccessSerializer(serializers.Serializer):
@@ -40,3 +40,4 @@ class TemporaryAccessSerializer(serializers.Serializer):
     email = serializers.CharField()
     telegram_number = serializers.CharField()
     tariff = serializers.CharField()
+    course = serializers.CharField()
