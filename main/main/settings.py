@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': config("POSTGRES_DB"),
         'USER': config("POSTGRES_USER"),
         'PASSWORD': config("POSTGRES_PASSWORD"),
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': 5432,
     }
 }
@@ -118,9 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = STATIC_ROOT
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
