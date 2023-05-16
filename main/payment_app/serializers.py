@@ -37,7 +37,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class TemporaryAccessSerializer(serializers.Serializer):
     name = serializers.CharField()
-    email = serializers.CharField()
+    # email = serializers.CharField()
     telegram_number = serializers.CharField()
     tariff = serializers.CharField()
     course = serializers.CharField()

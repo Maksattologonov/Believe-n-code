@@ -77,12 +77,12 @@ class TemporaryAccessService:
             raise ObjectNotFoundException('Object not found')
 
     @classmethod
-    def create_access(cls, name: str, email: str, telegram_number: str, tariff: str, course: str) -> TemporaryAccess:
+    def create_access(cls, name: str, telegram_number: str, tariff: str, course: str) -> TemporaryAccess:
         try:
             tariff_instance = Tariff.objects.get(name=tariff)
             course_instance = Course.objects.get(name=course, type=tariff_instance.id)
             if tariff_instance and course_instance:
-                new_event = cls.model.objects.create(name=name, email=email, telegram_number=telegram_number,
+                new_event = cls.model.objects.create(name=name, telegram_number=telegram_number,
                                                      tariff=tariff_instance, course=course_instance)
                 return course_instance.temporary_lms_url
             else:

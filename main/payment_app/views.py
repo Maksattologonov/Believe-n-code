@@ -2,11 +2,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from telegram_app.models import TelegramGroup
 from .models import PayboxSuccessPay, Course
 from .serializers import TariffSerializer, CourseSerializer, TemporaryAccessSerializer
 from .services import PayboxService, CourseService, PayboxCallbackService, TemporaryAccessService
@@ -67,10 +65,10 @@ class TemporaryAccessAPIView(APIView):
         serializer = TemporaryAccessSerializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
         url = TemporaryAccessService.create_access(name=serializer.validated_data.get('name'),
-                                             email=serializer.validated_data.get('email'),
-                                             telegram_number=serializer.validated_data.get('telegram_number'),
-                                             tariff=serializer.validated_data.get('tariff'),
-                                             course=serializer.validated_data.get('course'))
+                                                   # email=serializer.validated_data.get('email'),
+                                                   telegram_number=serializer.validated_data.get('telegram_number'),
+                                                   tariff=serializer.validated_data.get('tariff'),
+                                                   course=serializer.validated_data.get('course'))
         if url:
             return Response(data=url, status=status.HTTP_201_CREATED)
 

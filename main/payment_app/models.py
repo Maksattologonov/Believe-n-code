@@ -60,7 +60,7 @@ class PayboxSuccessPay(models.Model):
 
 class TemporaryAccess(models.Model):
     name = models.CharField(max_length=255, verbose_name="Имя пользователя")
-    email = models.EmailField(max_length=255, verbose_name="Email", unique=True)
+    # email = models.EmailField(max_length=255, verbose_name="Email", unique=True)
     telegram_number = models.CharField(max_length=20, verbose_name='Телеграм номер', unique=True)
     tariff = models.ForeignKey(Tariff, on_delete=models.CASCADE, verbose_name='Тариф')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс')
