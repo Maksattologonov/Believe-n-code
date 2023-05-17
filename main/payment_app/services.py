@@ -24,7 +24,7 @@ class PayboxCallbackService:
     @classmethod
     def save(cls, order_id, payment_id, amount, currency, description, user_phone, email, signature):
         try:
-            obj = Tariff.objects.get(pk=order_id)
+            obj = Course.objects.get(pk=order_id)
             new_event = cls.model.objects.create(order_id=obj.pk,
                                                  type=obj.type.name,
                                                  name=obj.name,
