@@ -31,6 +31,7 @@ class PayboxUrl(APIView):
 class ResultCallback(View):
 
     def get(self, *args, **kwargs):
+        print(self.request.GET.get('pg_payment_id'), "*"*80)
         if self.request.GET.get('pg_payment_id'):
 
             PayboxCallbackService.save(order_id=self.request.GET.get('pg_order_id'),
