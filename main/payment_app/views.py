@@ -50,7 +50,7 @@ class SuccessCallback(View):
     def get(self, *args, **kwargs):
 
         if self.request.GET.get("pg_payment_id"):
-            instance = Tariff.objects.get(order_id=self.request.GET.get('pg_order_id'))
+            instance = Tariff.objects.get(pk=self.request.GET.get('pg_order_id'))
             if instance:
                 data = Course.objects.get(name=instance.name, type__name=instance.type)
                 response_data = ({'data': data})
