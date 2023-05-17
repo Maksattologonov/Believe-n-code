@@ -34,8 +34,8 @@ class PayboxCallbackService:
                                                  user_phone=user_phone if user_phone else " ",
                                                  email=email if email else " ",
                                                  signature=signature)
-        except cls.model.ValidationError:
-            raise UniqueObjectException("Validation error")
+        except cls.model.ValidationError as ex:
+            raise UniqueObjectException("Validation error", ex)
         except Exception as ex:
             raise ObjectNotFoundException(ex, '*'*80)
 
