@@ -52,7 +52,7 @@ class SuccessCallback(View):
         if self.request.GET.get("pg_payment_id"):
             instance = Tariff.objects.get(pk=self.request.GET.get('pg_order_id'))
             if instance:
-                data = Course.objects.get(type=instance.name, type__pk=instance.pk)
+                data = Course.objects.get(type__name=instance.name, type__pk=instance.pk)
                 response_data = ({'data': data})
                 return render(self.request, template_name='payment_app/success.html', context=response_data)
         else:
