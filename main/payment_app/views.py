@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import PayboxSuccessPay, Course
+from .models import PayboxSuccessPay, Course, Tariff
 from .serializers import TariffSerializer, CourseSerializer, TemporaryAccessSerializer
 from .services import PayboxService, CourseService, PayboxCallbackService, TemporaryAccessService
 
@@ -50,8 +50,7 @@ class SuccessCallback(View):
     def get(self, *args, **kwargs):
 
         if self.request.GET.get("pg_payment_id"):
-            instance = PayboxSuccessPay.objects.get(payment_id=self.request.GET.get("pg_payment_id"),
-                                                    order_id=self.request.GET.get('pg_order_id'))
+            instance = Tariff.objects.get(order_id=self.request.GET.get('pg_order_id'))
             if instance:
                 data = Course.objects.get(name=instance.name, type__name=instance.type)
                 response_data = ({'data': data})
