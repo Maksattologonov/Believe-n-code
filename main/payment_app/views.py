@@ -52,7 +52,7 @@ class SuccessCallback(View):
             instance = PayboxSuccessPay.objects.get(payment_id=self.request.GET.get("pg_payment_id"),
                                                     order_id=self.request.GET.get('pg_order_id'))
             if instance:
-                print(instance.name, instance.type)
+                # print(instance.name, instance.type)
                 data = Course.objects.get(name=instance.name, type__name=instance.type)
                 response_data = ({'data': data})
                 return render(self.request, template_name='payment_app/success.html', context=response_data)
