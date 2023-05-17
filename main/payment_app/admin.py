@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from .models import Course, Tariff, PayboxSuccessPay, TemporaryAccess
 
 
@@ -12,7 +11,7 @@ class TariffAdmin(admin.ModelAdmin):
 
 
 class PayboxSuccessPayAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('payment_id', 'description', 'user_phone', 'name')
 
 
 class TemporaryAccessAdmin(admin.ModelAdmin):
