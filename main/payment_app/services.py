@@ -1,6 +1,7 @@
 import re
 
 from django.db import IntegrityError
+from rest_framework.exceptions import APIException
 
 from common.exceptions import ObjectNotFoundException, UniqueObjectException, TypeErrorException
 from .models import Tariff, Course, PayboxSuccessPay, TemporaryAccess
@@ -35,7 +36,7 @@ class PayboxCallbackService:
                                                  email=email if email else " ",
                                                  signature=signature)
         except Exception as ex:
-            raise UniqueObjectException("Validation error", ex)
+            raise APIException(ex)
         # except Exception as ex:
         #     raise ObjectNotFoundException(ex, '*'*80)
 
