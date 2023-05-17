@@ -11,7 +11,10 @@ pgdata
 pgdata/*
 docker-compose.yml
 .staticfiles/*
+.static/
+.static/*
 .main/saticfiles/*
+.main/static/*
 *staticfiles/
 # Distribution / packaging
 .Python
