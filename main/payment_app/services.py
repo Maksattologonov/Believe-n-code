@@ -20,24 +20,25 @@ class PayboxService:
 class PayboxCallbackService:
     model = PayboxSuccessPay
 
-    @classmethod
-    def save(cls, order_id, payment_id, amount, currency, description, user_phone, email, signature):
+    @staticmethod
+    def save(order_id, payment_id, amount, currency, description, user_phone, email, signature):
+        model = PayboxSuccessPay()
+        obj = Course.objects.get(pk=order_id)
+        model.order_id = obj.pk
+        model.type = obj.type.name
+        model.name = obj.name
+        model.payment_id = payment_id
+        model.amount = amount if amount else 0
+        model.currency = currency if currency else " "
+        model.description = description if description else " "
+        model.user_phone = user_phone if user_phone else " "
+        model.email = email if email else " "
+        model.signature = signature
+
         try:
-            obj = Course.objects.get(pk=order_id)
-            new_event = cls.model.objects.create(order_id=obj.pk,
-                                                 type=obj.type.name,
-                                                 name=obj.name,
-                                                 payment_id=payment_id,
-                                                 amount=amount if amount else 0,
-                                                 currency=currency if currency else " ",
-                                                 description=description if description else " ",
-                                                 user_phone=user_phone if user_phone else " ",
-                                                 email=email if email else " ",
-                                                 signature=signature)
-        except cls.model.ValidationError:
-            raise UniqueObjectException("Validation error")
+            model.save()
         except Exception as ex:
-            raise ObjectNotFoundException(ex, '*'*80)
+            print(f"Ошибка сохранения: {str(ex)}")
 
     @classmethod
     def get(cls, **filters):
