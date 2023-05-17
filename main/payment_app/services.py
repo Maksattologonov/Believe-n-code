@@ -37,7 +37,7 @@ class PayboxCallbackService:
         except cls.model.ValidationError:
             raise UniqueObjectException("Validation error")
         except Exception as ex:
-            raise ObjectNotFoundException(ex)
+            raise ObjectNotFoundException(ex, '*'*80)
 
     @classmethod
     def get(cls, **filters):
