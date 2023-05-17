@@ -37,14 +37,14 @@ class PayboxSuccessPayment(models.Model):
 
 
 class PayboxSuccessPay(models.Model):
-    payment_id = models.IntegerField(verbose_name='ID оплаты')
+    payment_id = models.IntegerField(verbose_name='ID оплаты', unique=True)
     amount = models.IntegerField(verbose_name='Цена')
     currency = models.CharField(max_length=3, verbose_name='Валюта')
-    description = models.CharField(max_length=100, verbose_name="Описание к оплате")
+    description = models.CharField(max_length=1000, verbose_name="Описание к оплате")
     payment_date = models.DateField(verbose_name='Дата оплаты', default=timezone.now)
     user_phone = models.CharField(verbose_name='Номер телефона', max_length=25)
     email = models.EmailField(verbose_name="Почта", max_length=255)
-    signature = models.CharField(verbose_name="Подпись продукта")
+    signature = models.CharField(max_length=255, verbose_name="Подпись продукта", unique=True)
     order_id = models.IntegerField(verbose_name="ID Курса")
     type = models.CharField(max_length=255, verbose_name="Тариф")
     name = models.CharField(max_length=255, verbose_name="Название Курса")
