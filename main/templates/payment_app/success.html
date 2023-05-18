@@ -1,46 +1,42 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     {% block head %}
+    <link rel="icon" type="image/webp" href="{% static 'media/footer_logo.webp' %}">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Permission page</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'payment_app/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'payment_app/css/styles.css' %}">
     {% endblock %}
-    
 </head>
 <body>
-    <div class="header">
-            <h1> Cохраните эту страницу </h1>
+<div class="header">
+    <h1>Добро пожаловать в Believe'n'code</h1>
+</div>
+<div class="container">
+    <a href="{{ telegram.group_link }}" class="card telegram">
+        <div class="content">
+            <h3> Поприветствовать куратора </h3>
+            <span></span>
+            <p>В случае каких либо вопросов обратитесь к нам в техническую подержку на www.believenode.io</p>
         </div>
-    {% block content %}
-    <div class="container">
-        <div class="card telegram">
-            <div class="content">
-                <h3> Добавиться в телеграм группу </h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, adipisci vero possimus quod cupiditate amet?</p>
-<!--                <a href="{{ group_id }}">-->
-                    <button class="button">
-                        Перейти в Telegram
-                    </button>
-                </a>
-            </div>
-        </div>
+    </a>
 
-        <div class="card z_class">
-            <div class="content">
-                <h3> Пройти регистрацию на курс </h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, adipisci vero possimus quod cupiditate amet?</p>
-                <a href="{{ data.lms_url }}">
-                    <button class="button">
-                        Перейти в Zen class
-                    </button>
-                </a>
-            </div>
+    <a href="{{ data.lms_url }}" class="card z_class">
+        <div class="content">
+            <h3> Начать обучение</h3>
+<!--            <span></span>-->
+<!--            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, adipisci vero possimus quod cupiditate-->
+<!--                amet?</p>-->
         </div>
+    </a>
+    <div class="footer">
+        <h3>Прежде чем начать обучение обязательно поздаровайтесь с куратором и сохраните эту страницу</h3>
     </div>
-{% endblock %}
+</div>
+
 </body>
 </html>
