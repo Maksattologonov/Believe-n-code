@@ -54,9 +54,15 @@ class SuccessCallback(View):
         if self.request.GET.get("pg_payment_id"):
             try:
                 obj = Course.objects.get(pk=self.request.GET.get('pg_order_id'))
-                payment = PayboxCallbackService.get(payment_id=self.request.GET.get('pg_payment_id'),
-                                                    order_id=self.request.GET.get('pg_order_id'))
-                if payment:
+                payment = PayboxCallbackService.save(order_id=obj.pk,
+                                                     payment_id=int(self.request.GET.get('pg_payment_id')),
+                                                     amount=obj.type.new_price,
+                                                     currency="",
+                                                     description=obj.type.description,
+                                                     user_phone=" ",
+                                                     email=" ",
+                                                     signature=self.request.GET.get('pg_sig'))
+                if payment.order_id:
                     data = Course.objects.get(name=payment.name, type=payment.order_id)
                     telegram_group = TelegramGroup.objects.get(type=data.pk)
                     response_data = ({'data': data, 'telegram': telegram_group})
@@ -72,7 +78,7 @@ class SuccessCallback(View):
                                                           user_phone=" ",
                                                           email=" ",
                                                           signature=self.request.GET.get('pg_sig'))
-                if payment:
+                if payment.order_id:
                     data = Course.objects.get(name=payment.name, type=payment.order_id)
                     telegram_group = TelegramGroup.objects.get(type=data.pk)
                     response_data = ({'data': data, 'telegram': telegram_group})
