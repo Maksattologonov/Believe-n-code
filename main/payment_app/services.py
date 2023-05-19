@@ -34,7 +34,6 @@ class PayboxCallbackService:
                                                  user_phone=user_phone if user_phone else " ",
                                                  email=email if email else " ",
                                                  signature=signature)
-            return new_event
         except Exception as ex:
             print(f"Ошибка сохранения: {str(ex)}")
 
