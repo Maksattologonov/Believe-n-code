@@ -54,6 +54,14 @@ class SuccessCallback(View):
         if self.request.GET.get("pg_payment_id"):
             try:
                 obj = Course.objects.get(pk=self.request.GET.get('pg_order_id'))
+                payment = PayboxCallbackService.get(payment_id=self.request.GET.get('pg_payment_id'),
+                                                    order_id=self.request.GET.get('pg_order_id'))
+                if payment:
+                    data = Course.objects.get(name=payment.name, type=payment.order_id)
+                    telegram_group = TelegramGroup.objects.get(type=data.pk)
+                    response_data = ({'data': data, 'telegram': telegram_group})
+                    return render(self.request, template_name='payment_app/success.html', context=response_data)
+            except PayboxSuccessPay.DoesNotExist:
                 payment = PayboxSuccessPay.objects.create(order_id=obj.pk,
                                                           type=obj.type.name,
                                                           name=obj.name,
