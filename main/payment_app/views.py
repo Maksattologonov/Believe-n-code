@@ -53,9 +53,7 @@ class SuccessCallback(View):
 
         if self.request.GET.get("pg_payment_id"):
             try:
-                obj = Course.objects.get(pk=self.request.GET.get('pg_order_id'))
-                payment = PayboxSuccessPay.objects.get(order_id=obj.pk,
-                                                       payment_id=int(self.request.GET.get('pg_payment_id')),
+                payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
                                                        signature=self.request.GET.get('pg_sig'))
                 if payment:
                     data = Course.objects.get(name=payment.name, type=payment.order_id)
