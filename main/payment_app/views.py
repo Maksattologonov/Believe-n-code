@@ -67,7 +67,6 @@ class SuccessCallback(View):
         else:
             return render(self.request, template_name='payment_app/error.html')
 
-
 class TemporaryAccessAPIView(APIView):
     def post(self, *args, **kwargs):
         serializer = TemporaryAccessSerializer(data=self.request.data)

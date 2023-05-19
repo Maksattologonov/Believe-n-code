@@ -22,7 +22,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'pg_amount': obj.type.new_price,
             'pg_description': obj.type.description,
             'pg_salt': f'Оплата за {obj.name}, по тарифу {obj.type}',
-            'pg_result_url': str(config('PAYBOX_RESULT_URL')),
+            # 'pg_result_url': str(config('PAYBOX_RESULT_URL')),
             'pg_testing_mode': int(config('PAYBOX_TESTING_MODE')),
             'pg_param1': obj.name,
             'pg_param2': obj.type.name
