@@ -50,20 +50,20 @@ class ResultCallback(View):
 
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
-
-        if self.request.GET.get("pg_payment_id"):
-            try:
-                payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
-                                                       signature=self.request.GET.get('pg_sig'))
-                if payment:
-                    data = Course.objects.get(name=payment.name, type=payment.order_id)
-                    telegram_group = TelegramGroup.objects.get(type=data.pk)
-                    response_data = ({'data': data, 'telegram': telegram_group})
-                    return render(self.request, template_name='payment_app/success.html', context=response_data)
-            except IntegrityError:
-                return render(self.request, template_name='payment_app/error.html', context={'error': 'Ошибка уникальности'})
-        else:
-            return render(self.request, template_name='payment_app/error.html')
+        try:
+            if self.request.GET.get("pg_payment_id"):
+                try:
+                    payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
+                                                           signature=self.request.GET.get('pg_sig'))
+                    if payment:
+                        data = Course.objects.get(name=payment.name, type=payment.order_id)
+                        telegram_group = TelegramGroup.objects.get(type=data.pk)
+                        response_data = ({'data': data, 'telegram': telegram_group})
+                        return render(self.request, template_name='payment_app/success.html', context=response_data)
+                except IntegrityError:
+                    return render(self.request, template_name='payment_app/error.html', context={'error': 'Ошибка уникальности'})
+        except Exception as ex:
+            return render(self.request, template_name='payment_app/error.html', context={'error': ex})
 
 class TemporaryAccessAPIView(APIView):
     def post(self, *args, **kwargs):
