@@ -123,6 +123,7 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # пустая папка, сюда будет собирать статику collectstatic
 
 STATIC_URL = '/static/'
+<<<<<<< HEAD
 
 STATICFILES_DIRS = (
 
@@ -134,6 +135,9 @@ STATICFILES_FINDERS = (
 
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',)
 
+=======
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+>>>>>>> 3ed3767 (aa)
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
