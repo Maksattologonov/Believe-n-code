@@ -22,6 +22,7 @@ class PayboxCallbackService:
 
     @classmethod
     def save(cls, order_id, payment_id, amount, currency, description, user_phone, email, signature):
+        print("*"*90)
         try:
             obj = Course.objects.get(pk=order_id)
             cls.model.objects.create(order_id=obj.pk,
