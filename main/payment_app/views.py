@@ -54,7 +54,7 @@ class SuccessCallback(View):
             if self.request.GET.get("pg_payment_id"):
                 try:
                     payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
-                                                           signature=self.request.GET.get('pg_sig'))
+                                                           order_id=self.request.GET.get('pg_order_id'))
                     if payment:
                         data = Course.objects.get(name=payment.name, type=payment.order_id)
                         telegram_group = TelegramGroup.objects.get(type=data.pk)
