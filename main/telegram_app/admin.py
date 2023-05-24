@@ -4,23 +4,23 @@ from telegram_app.models import TelegramGroup, Mentor, TelegramMessage, ContactU
 
 
 class MentorAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'user_link', 'direction')
+    list_display = ('user_link', 'direction')
 
 
 class TelegramGroupAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'direction', 'type', 'group_link')
+    list_display = ('direction', 'type', 'group_link')
 
 
 class TelegramMessageAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'manager_id')
+    list_display = ('manager_id', 'pk')
 
 
 class ContactUsTelegramAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'manager_id')
+    list_display = ('manager_id', 'pk')
 
 
 class InstallmentTelegramAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'manager_id')
+    list_display = ('manager_id', 'pk')
 
 
 admin.site.register(TelegramGroup, TelegramGroupAdmin)
