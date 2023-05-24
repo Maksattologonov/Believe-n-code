@@ -12,15 +12,15 @@ class TelegramGroupAdmin(admin.ModelAdmin):
 
 
 class TelegramMessageAdmin(admin.ModelAdmin):
-    list_display = ('manager_id', 'pk')
+    list_display = ('manager_id', 'id')
 
 
 class ContactUsTelegramAdmin(admin.ModelAdmin):
-    list_display = ('manager_id', 'pk')
+    list_display = ('manager_id', 'id')
 
 
 class InstallmentTelegramAdmin(admin.ModelAdmin):
-    list_display = ('manager_id', 'pk')
+    list_display = ('manager_id', 'id')
 
 
 admin.site.register(TelegramGroup, TelegramGroupAdmin)
