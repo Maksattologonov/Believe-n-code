@@ -3,47 +3,62 @@ import logging
 import os
 import django
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, KeyboardButton
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
-
-from main.settings import TG_TOKEN
-
+from decouple import config
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
 
-from telegram_app.models import Telegram
-from payment_app.models import TemporaryAccess
+from telegram_app.models import TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramGroup
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_latest_record():
-    record = Telegram.objects.all().first()
-    return record.chat_welcome_text, record.group_welcome_text, record.direction, record.installment_program, \
-        record.manager_telegram_id
-
-
 class TelegramBot:
     update_user: Update
+
+    @staticmethod
+    def get_message():
+        record = TelegramMessage.objects.get()
+        return record.text, record.manager_id
+
+    @staticmethod
+    def get_contact_message():
+        record = ContactUsTelegram.objects.get()
+        return record.text, record.manager_id
+
+    @staticmethod
+    def get_installment_message():
+        record = InstallmentTelegram.objects.get()
+        return record.text, record.manager_id
+
+    @staticmethod
+    def get_group_message():
+        record = TelegramGroup.objects.get()
+        return record.text, record.manager_id
 
     @classmethod
     def start(cls, update: Update, context: CallbackContext) -> None:
         user = update.message.from_user
-
         cls.update_user = update
-        text_1, text_2, direction, installment_program, manager_telegram_id = get_latest_record()
+        text, manager = cls.get_message()
+        text1, manager1 = cls.get_contact_message()
+        text2, manager2 = cls.get_installment_message()
         logger.info("User %s started the conversation.", user.first_name)
-        keyboard = [
-            [
-                InlineKeyboardButton("Связаться с нами", url=str(direction)),
-                InlineKeyboardButton("Программа рассрочки", url=str(installment_program))
-            ]
-        ]
+        keyboard = [[
+            InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text(f"{text_1.format(user.first_name)}", reply_markup=reply_markup)
-        print(manager_telegram_id, type(manager_telegram_id))
-        context.bot.send_message(chat_id=manager_telegram_id, text=f'Пользователь {user.username} начал общение')
+        if update.message.text == '/start installments':
+            context.bot.send_message(chat_id=manager2, text=f'Пользователь {user.username} обратился с программой рассрочки')
+            context.bot.send_message(update.message.chat_id, text=text2)
+        elif update.message.text == '/start contact_us':
+            context.bot.send_message(chat_id=manager1, text=f'Пользователь {user.username} хочет связаться',
+                                     reply_markup=reply_markup)
+            context.bot.send_message(update.message.chat_id, text=text1)
+        else:
+            context.bot.send_message(chat_id=manager, text=f'Пользователь {user.username} начал общение', reply_markup=reply_markup)
+            context.bot.send_message(update.message.chat_id, text=text)
 
     @classmethod
     def handle_message(cls, update, context):
@@ -51,23 +66,22 @@ class TelegramBot:
         message = update.message
         user = message.from_user
         reply_to_message = message.reply_to_message
-        text_1, text_2, direction, installment_program, manager_telegram_id = get_latest_record()
-
+        text, manager = cls.get_message()
         if reply_to_message:
             context.bot.send_message(chat_id=reply_to_message['forward_from']['id'],
                                      text=text)
         else:
-            context.bot.forward_message(chat_id=manager_telegram_id, from_chat_id=message.chat_id,
+            context.bot.forward_message(chat_id=manager, from_chat_id=message.chat_id,
                                         message_id=message.message_id)
 
     @classmethod
     def add_to_group(cls, update: Update, context: CallbackContext) -> None:
-        text_1, text_2, direction, installment_program, manager_telegram_id = get_latest_record()
+        text, manager = cls.get_group_message()
 
         new_members = update.message.new_chat_members
         for member in new_members:
             context.bot.send_message(chat_id=update.message.chat_id,
-                                     text=f"{text_2.format(update.message.from_user.first_name)}")
+                                     text=f"{text.format(update.message.from_user.first_name)}")
 
     @classmethod
     def error(cls, update: Update, context: CallbackContext) -> None:
@@ -76,7 +90,7 @@ class TelegramBot:
 
 def main() -> None:
     tg_bot = TelegramBot
-    updater = Updater('6241290167:AAGTyfCUyXU0Qsv_Sfkx55-tGMANqRfgcO0')
+    updater = Updater(config('TG_TOKEN'))
     updater.start_polling(timeout=3600)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", tg_bot.start))
@@ -90,5 +104,4 @@ def main() -> None:
     updater.idle()
 
 
-if __name__ == '__main__':
-    main()
+main = main()
