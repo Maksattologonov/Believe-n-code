@@ -35,7 +35,7 @@ class TelegramBot:
 
     @staticmethod
     def get_group_message():
-        record = TelegramGroup.objects.get()
+        record = TelegramGroup.objects.get().first()
         return record.text, record.manager_id
 
     @classmethod
