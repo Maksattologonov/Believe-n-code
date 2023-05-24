@@ -35,8 +35,8 @@ class TelegramBot:
 
     @staticmethod
     def get_group_message():
-        record = TelegramGroup.objects.get().first()
-        return record.text, record.manager_id
+        record = TelegramGroup.objects.filter().first()
+        return record.text
 
     @classmethod
     def start(cls, update: Update, context: CallbackContext) -> None:
@@ -56,7 +56,7 @@ class TelegramBot:
             context.bot.send_message(chat_id=manager1, text=f'Пользователь {user.username} хочет связаться',
                                      reply_markup=reply_markup)
             context.bot.send_message(update.message.chat_id, text=text1)
-        else:
+        elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=manager, text=f'Пользователь {user.username} начал общение', reply_markup=reply_markup)
             context.bot.send_message(update.message.chat_id, text=text)
 
@@ -76,8 +76,7 @@ class TelegramBot:
 
     @classmethod
     def add_to_group(cls, update: Update, context: CallbackContext) -> None:
-        text, manager = cls.get_group_message()
-
+        text = cls.get_group_message()
         new_members = update.message.new_chat_members
         for member in new_members:
             context.bot.send_message(chat_id=update.message.chat_id,
