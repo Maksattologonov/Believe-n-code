@@ -3,19 +3,22 @@ from .models import Course, Tariff, PayboxSuccessPay, TemporaryAccess
 
 
 class CourseAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('pk', 'name', 'type')
+    search_fields = ('name', 'type')
 
 
 class TariffAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('pk', 'name', 'new_price')
+    search_fields = ('name', 'new_price')
 
 
 class PayboxSuccessPayAdmin(admin.ModelAdmin):
-    list_display = ('payment_id', 'description', 'user_phone', 'name')
+    list_display = ('payment_id', 'user_phone', 'name')
+    search_fields = ('payment_id', 'name')
 
 
 class TemporaryAccessAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'telegram_number', 'tariff', 'course', 'start_date')
 
 
 admin.site.register(Course, CourseAdmin)
