@@ -1,13 +1,13 @@
-from bot import TelegramBot
+from common.exceptions import ObjectNotFoundException
+from telegram_app.models import TelegramBot
 
 
 class TelegramBotService:
     model = TelegramBot
 
     @classmethod
-    def save(cls, username: str, name: str, user_chat_id: int):
+    def get(cls, **filters):
         try:
-            obj = cls.model(username=username, name=name, user_chat_id=user_chat_id)
-            obj.save()
-        except Exception as ex:
-            return ex
+            return cls.model.objects.get(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Telegram account not found')

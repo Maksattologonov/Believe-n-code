@@ -1,7 +1,22 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from payment_app.models import Course, Tariff
+
+
+class TelegramBot(models.Model):
+    bot_link = models.URLField(max_length=100, verbose_name='Ссылка на бота', help_text='пример: https://t.me/TEST_BOT')
+
+    def __str__(self):
+        return self.bot_link
+
+    class Meta:
+        verbose_name = 'Телеграм бот'
+        verbose_name_plural = 'Телеграм бот'
+
+    def save(self, *args, **kwargs):
+        if not self.pk and TelegramBot.objects.exists():
+            return TelegramBot.objects.update_or_create(*args, **kwargs)
+        return super(TelegramBot, self).save(*args, **kwargs)
 
 
 class Mentor(models.Model):

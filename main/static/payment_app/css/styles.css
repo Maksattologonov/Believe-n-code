@@ -36,6 +36,7 @@
     left: 0;
     top: 0;
     background-color: rgba(8, 12, 32, 1);
+    font-family: __latin, __cyrillic
 }
 
 
@@ -176,7 +177,7 @@ body{
     display: block;
     width: 100%;
     font-weight: bold;
-    font-family: __taile_86d337,__taile_Fallback_86d337;
+    font-family: __latin, __cyrillic
 }
 
 .content a {
@@ -217,5 +218,11 @@ body{
     font-style: italic;
     font-size: 13px;
     text-align: center;
+    font-family: __latin, __cyrillic
+}
+
+.footer > a {
+    color: white;
+    text-decoration: none;
     font-family: __latin, __cyrillic
 }
