@@ -1,3 +1,4 @@
+from decouple import config
 from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -50,20 +51,28 @@ class ResultCallback(View):
 
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
-        try:
-            if self.request.GET.get("pg_payment_id"):
-                try:
-                    payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
-                                                           order_id=self.request.GET.get('pg_order_id'))
-                    if payment:
-                        data = Course.objects.get(name=payment.name, type=payment.order_id)
+        if self.request.GET.get("pg_payment_id"):
+            try:
+                payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
+                                                       order_id=self.request.GET.get('pg_order_id'))
+                if payment:
+                    data = Course.objects.get(name=payment.name, type=payment.order_id)
+                    try:
                         telegram_group = TelegramGroup.objects.get(type=data.pk)
-                        response_data = ({'data': data, 'telegram': telegram_group})
-                        return render(self.request, template_name='payment_app/success.html', context=response_data)
-                except IntegrityError:
-                    return render(self.request, template_name='payment_app/error.html', context={'error': 'Ошибка уникальности'})
-        except Exception as ex:
-            return render(self.request, template_name='payment_app/error.html', context={'error': ex})
+                    except TelegramGroup.DoesNotExist:
+                        telegram_group = {'group_link': config('TG_GROUP')}
+                    response_data = ({'data': data, 'telegram': telegram_group})
+                    return render(self.request, template_name='payment_app/success.html', context=response_data)
+            except IntegrityError:
+                return render(self.request, template_name='payment_app/error.html',
+                              context={'error': 'Ошибка уникальности'})
+            except PayboxSuccessPay.DoesNotExist:
+                return render(self.request, template_name='payment_app/error.html',
+                              context={'error': 'Данные введены ошибочно'})
+        else:
+            return render(self.request, template_name='payment_app/error.html',
+                          context={'error': 'Данные введены ошибочно'})
+
 
 class TemporaryAccessAPIView(APIView):
     def post(self, *args, **kwargs):
