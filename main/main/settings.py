@@ -153,8 +153,6 @@ CORS_ALLOWED_ORIGINS = [
     "https://test-api.freedompay.money",
     "https://api.freedompay.money",
     "https://believencode.io",
-    "http://believencode.io",
-    "http://16.16.91.127"
     "https://16.16.91.127"
 ]
 REST_FRAMEWORK = {
