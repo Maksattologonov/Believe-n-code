@@ -152,6 +152,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "https://test-api.freedompay.money",
     "https://api.freedompay.money",
+    "https://believencode.io",
+    "http://believencode.io",
+    "http://16.16.91.127"
+    "https://16.16.91.127"
 ]
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
