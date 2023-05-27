@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     {% block head %}
-    <link rel="icon" type="image/webp" href="{% static 'media/footer_logo.webp' %}">
+    <link rel="icon" type="image/webp"  href="{% static 'media/footer_logo.webp' %}">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,13 +17,13 @@
     <h1>Добро пожаловать в Believe'n'code</h1>
 </div>
 <div class="container">
-    <a href="{{ telegram.group_link }}" class="card telegram">
+    <a href="{{ telegram.group_link }}" target="_blank" class="card telegram">
         <div class="content">
             <h3> Поприветствовать куратора </h3>
         </div>
     </a>
 
-    <a href="{{ data.lms_url }}" class="card z_class">
+    <a href="{{ data.lms_url }}" target="_blank" class="card z_class">
         <div class="content">
             <h3> Начать обучение</h3>
 <!--            <span></span>-->
@@ -33,7 +33,7 @@
     </a>
     <div class="footer">
         <h3>Прежде чем начать обучение обязательно поздаровайтесь с куратором и сохраните эту страницу <br>
-        В случае каких либо вопросов обратитесь к нам в техническую подержку на <a href="https://t.me/bigmankuba">www.believenode.io</a></h3>
+        В случае каких либо вопросов обратитесь к нам в техническую подержку на <a href="https://t.me/bigmankuba" target="_blank">www.believenode.io</a></h3>
     </div>
 </div>
 

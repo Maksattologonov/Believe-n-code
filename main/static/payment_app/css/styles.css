@@ -59,10 +59,28 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     color: #efefef;
     font-style: normal;
     font-family: __latin, __cyrillic
 }
+
+@media only screen and (max-width: 600px) {
+    .header {
+        font-size: 14px;
+
+    }
+    .card{
+    width: 300px;
+    height: 220px;
+    }
+    .footer{
+       font-size: 10px;
+    }
+
+
+}
+
 .container{
     width: 100%;
     min-height: 85vh;
