@@ -29,7 +29,7 @@ class Course(models.Model):
         verbose_name_plural = "Курсы"
 
     def __str__(self):
-        return self.name
+        return f'{self.name}, {self.type}'
 
 
 class PayboxSuccessPayment(models.Model):

@@ -21,7 +21,7 @@ class TelegramBot(models.Model):
 
 class Mentor(models.Model):
     user_link = models.CharField(max_length=255, verbose_name="Ссылка на пользователя телеграм")
-    direction = models.ForeignKey(Tariff, max_length=255, on_delete=models.CASCADE, verbose_name="Направление")
+    direction = models.ForeignKey(Course, max_length=255, on_delete=models.CASCADE, verbose_name="Направление")
 
     def __str__(self):
         return self.user_link

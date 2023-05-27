@@ -1,11 +1,12 @@
-import datetime
+import logging
 import logging
 import os
-import django
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, KeyboardButton
-from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
+import django
 from decouple import config
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
 
