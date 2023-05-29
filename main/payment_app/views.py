@@ -55,8 +55,9 @@ class SuccessCallback(View):
             try:
                 payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
                                                        order_id=self.request.GET.get('pg_order_id'))
+                print(payment)
                 if payment:
-                    data = Course.objects.get(name=payment.name, type=payment.order_id)
+                    data = Course.objects.get(name=payment.name, type=payment.order_id, type__name=payment.type)
                     try:
                         telegram_group = TelegramGroup.objects.get(type=data.pk)
                     except TelegramGroup.DoesNotExist:
