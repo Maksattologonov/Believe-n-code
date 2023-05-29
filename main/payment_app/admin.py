@@ -3,8 +3,8 @@ from .models import Course, Tariff, PayboxSuccessPay, TemporaryAccess
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type')
-    search_fields = ('name', 'type')
+    list_display = ('pk', 'name', 'type')
+    search_fields = ('pk', 'name', 'type')
 
 
 class TariffAdmin(admin.ModelAdmin):
