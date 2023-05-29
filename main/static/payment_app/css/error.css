@@ -21,7 +21,7 @@
     box-sizing: border-box;
     left: 0;
     top:0;
-
+    background-color: rgba(8, 12, 32, 1);
     font-family: __latin, __cyrillic
 }
 
