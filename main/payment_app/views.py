@@ -1,3 +1,5 @@
+import time
+
 from decouple import config
 from django.db import IntegrityError
 from django.http import HttpResponse
@@ -51,6 +53,7 @@ class ResultCallback(View):
 
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
+        time.sleep(5)
         if self.request.GET.get("pg_payment_id"):
             try:
                 payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
