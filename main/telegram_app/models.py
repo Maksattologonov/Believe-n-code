@@ -47,7 +47,7 @@ class TelegramGroup(models.Model):
 
 class TelegramMessage(models.Model):
     text = models.TextField(verbose_name="Текст приветствия")
-    manager_id = models.IntegerField(verbose_name="Телеграм ID менеджера")
+    manager_id = models.CharField(max_length=50, verbose_name="Телеграм ID менеджера")
 
     def __str__(self):
         return self.text
@@ -64,7 +64,7 @@ class TelegramMessage(models.Model):
 
 class ContactUsTelegram(models.Model):
     text = models.TextField(verbose_name="Текст")
-    manager_id = models.IntegerField(verbose_name='Телеграм ID менеджера')
+    manager_id = models.CharField(max_length=50, verbose_name='Телеграм ID менеджера')
 
     def __str__(self):
         return self.text
@@ -81,7 +81,7 @@ class ContactUsTelegram(models.Model):
 
 class InstallmentTelegram(models.Model):
     text = models.TextField(verbose_name="Текст для программы рассрочки")
-    manager_id = models.IntegerField(verbose_name='Телеграм ID менеджера')
+    manager_id = models.CharField(max_length=50, verbose_name='Телеграм ID менеджера')
 
     def __str__(self):
         return self.text
