@@ -55,7 +55,6 @@ class SuccessCallback(View):
             try:
                 payment = PayboxSuccessPay.objects.get(payment_id=int(self.request.GET.get('pg_payment_id')),
                                                        order_id=self.request.GET.get('pg_order_id'))
-                print(payment.name, payment.order_id, '*'*20)
                 if payment:
                     data = Course.objects.get(name=payment.name, pk=payment.order_id)
                     try:
