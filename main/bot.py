@@ -82,7 +82,7 @@ class TelegramBot:
         new_members = update.message.new_chat_members
         for member in new_members:
             context.bot.send_message(chat_id=update.message.chat_id,
-                                     text=f"{text.format(update.message.from_user.first_name)}")
+                                     text=f"{text.format(update.message.from_user.first_name, update.message.chat.title)}")
 
     @classmethod
     def error(cls, update: Update, context: CallbackContext) -> None:

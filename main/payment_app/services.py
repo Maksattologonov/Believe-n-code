@@ -24,17 +24,17 @@ class PayboxCallbackService:
     def save(cls, order_id, payment_id, amount, currency, description, user_phone, email, signature):
         try:
             obj = Course.objects.get(pk=order_id)
-            instance = PayboxSuccessPay()
-            instance.order_id = obj.pk
-            instance.type = obj.type.name
-            instance.name = obj.name
-            instance.payment_id = payment_id
-            instance.amount = amount if amount else 0
-            instance.currency = currency if currency else " "
-            instance.description = description if description else " "
-            instance.user_phone = user_phone if user_phone else " "
-            instance.email = email if email else " "
-            instance.signature = signature
+            instance = PayboxSuccessPay(
+                order_id=obj.pk,
+                payment_id=payment_id,
+                signature=signature,
+                type=obj.type.name,
+                name=obj.name,
+                amount=amount if amount else 0,
+                currency=currency if currency else " ",
+                description=description if description else " ",
+                user_phone=user_phone if user_phone else " ",
+                email=email if email else " ")
             instance.save()
         except Exception as ex:
             print(f"Ошибка сохранения: {str(ex)}")
