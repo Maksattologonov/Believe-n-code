@@ -67,14 +67,14 @@ class TelegramBot:
         user = message.from_user
         reply_to_message = message.reply_to_message
         text, manager = cls.get_message()
-        context.bot.send_message(update.message.chat_id,
-                                 text='Ваше обращение было принято, в ближайшее время с вами свяжется ваш личный менеджер, и полностью вас проконсультирует.')
         if reply_to_message:
             context.bot.send_message(chat_id=reply_to_message['forward_from']['id'],
                                      text=text)
         else:
             context.bot.forward_message(chat_id=manager, from_chat_id=message.chat_id,
                                         message_id=message.message_id)
+            context.bot.send_message(update.message.chat_id,
+                                     text='Ваше обращение было принято, в ближайшее время с вами свяжется ваш личный менеджер, и полностью вас проконсультирует.')
 
     @classmethod
     def add_to_group(cls, update: Update, context: CallbackContext) -> None:
