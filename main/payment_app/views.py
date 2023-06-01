@@ -2,6 +2,7 @@ import time
 
 from decouple import config
 from django.db import IntegrityError
+from django.db.models import Case, When, Value
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -27,7 +28,14 @@ class CourseView(APIView):
 
 class PayboxUrl(APIView):
     def get(self, *args, **kwargs):
-        queryset = PayboxService.get()
+        queryset = PayboxService.get().order_by(
+            Case(
+                When(name='Up', then=Value(0)),
+                When(name='Pro', then=Value(1)),
+                When(name='Ultra', then=Value(2)),
+                default=Value(3),
+            )
+        )
         if queryset is not None:
             serializer = TariffSerializer(queryset, many=True)
             return Response(data=serializer.data, status=status.HTTP_200_OK)

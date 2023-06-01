@@ -30,7 +30,7 @@ class CourseSerializer(serializers.ModelSerializer):
         }
         secret_key = str(config('PAYBOX_SECRET_KEY'))
         return build_paybox_signature(params, secret_key)
-
+    
     class Meta:
         model = Course
         fields = ('id', 'name', 'url', 'temporary_lms_url')
