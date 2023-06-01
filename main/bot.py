@@ -50,14 +50,16 @@ class TelegramBot:
             InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         if update.message.text == '/start installments':
-            context.bot.send_message(chat_id=manager2, text=f'Пользователь {user.username} обратился с программой рассрочки')
+            context.bot.send_message(chat_id=int(manager2),
+                                     text=f'Пользователь {user.username} обратился с программой рассрочки')
             context.bot.send_message(update.message.chat_id, text=text2)
         elif update.message.text == '/start contact_us':
-            context.bot.send_message(chat_id=manager1, text=f'Пользователь {user.username} хочет связаться',
+            context.bot.send_message(chat_id=int(manager1), text=f'Пользователь {user.username} хочет связаться',
                                      reply_markup=reply_markup)
             context.bot.send_message(update.message.chat_id, text=text1)
         elif not update.message['chat']['type'] == 'supergroup':
-            context.bot.send_message(chat_id=manager, text=f'Пользователь {user.username} начал общение', reply_markup=reply_markup)
+            context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',
+                                     reply_markup=reply_markup)
             context.bot.send_message(update.message.chat_id, text=text)
 
     @classmethod
