@@ -20,7 +20,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'pg_order_id': obj.id,
             'pg_merchant_id': int(config('PAYBOX_MERCHANT_ID')),
             'pg_amount': obj.type.new_price,
-            'pg_currency': 'USD',
+            'pg_currency': 'KGS',
             'pg_description': obj.type.description,
             'pg_salt': f'Оплата за {obj.name}, по тарифу {obj.type}',
             # 'pg_result_url': str(config('PAYBOX_RESULT_URL')),
@@ -30,7 +30,7 @@ class CourseSerializer(serializers.ModelSerializer):
         }
         secret_key = str(config('PAYBOX_SECRET_KEY'))
         return build_paybox_signature(params, secret_key)
-    
+
     class Meta:
         model = Course
         fields = ('id', 'name', 'url', 'temporary_lms_url')
