@@ -61,7 +61,7 @@ class ResultCallback(View):
 
 class SuccessCallback(View):
     def get(self, *args, **kwargs):
-        time.sleep(3)
+        time.sleep(9)
         if self.request.GET.get("pg_payment_id") and self.request.GET.get('pg_order_id') and self.request.GET.get(
                 'pg_sig'):
             try:
