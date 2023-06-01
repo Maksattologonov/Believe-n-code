@@ -20,7 +20,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'pg_order_id': obj.id,
             'pg_merchant_id': int(config('PAYBOX_MERCHANT_ID')),
             'pg_amount': obj.type.new_price,
-            'pg_currency': 'KGS',
+            'pg_currency': 'USD',
             'pg_description': obj.type.description,
             'pg_salt': f'Оплата за {obj.name}, по тарифу {obj.type}',
             # 'pg_result_url': str(config('PAYBOX_RESULT_URL')),
