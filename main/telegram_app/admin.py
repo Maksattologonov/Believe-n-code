@@ -35,5 +35,5 @@ admin.site.register(InstallmentTelegram, InstallmentTelegramAdmin)
 admin.site.register(ContactUsTelegram, ContactUsTelegramAdmin)
 admin.site.register(TelegramBot, TelegramBotAdmin)
 
-admin.site.unregister(User)
+
 admin.site.unregister(Group)
