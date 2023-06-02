@@ -57,6 +57,11 @@ class TelegramBot:
             context.bot.send_message(chat_id=int(manager1), text=f'Пользователь {user.username} хочет связаться',
                                      reply_markup=reply_markup)
             context.bot.send_message(update.message.chat_id, text=text1)
+        elif update.message.text == '/start supply':
+            context.bot.send_message(chat_id=int(manager1), text=f'Пользователь {user.username} нуждается в поддержке',
+                                     reply_markup=reply_markup)
+            context.bot.send_message(update.message.chat_id,
+                                     text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',
                                      reply_markup=reply_markup)
