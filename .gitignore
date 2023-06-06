@@ -12,6 +12,7 @@ pgdata/*
 docker-compose.yml
 .staticfiles/*
 .static/
+.env
 .static/*
 .main/saticfiles/*
 .main/static/*
