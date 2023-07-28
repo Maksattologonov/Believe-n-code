@@ -1,6 +1,9 @@
 from django.db import models
 
+from django.utils import timezone
 from payment_app.models import Course, Tariff
+
+from payment_app.models import Webinar
 
 
 class TelegramBot(models.Model):
@@ -94,3 +97,18 @@ class InstallmentTelegram(models.Model):
         if not self.pk and InstallmentTelegram.objects.exists():
             return InstallmentTelegram.objects.update_or_create(*args, **kwargs)
         return super(InstallmentTelegram, self).save(*args, **kwargs)
+
+
+class TelegramUser(models.Model):
+    user_id = models.IntegerField(verbose_name='ID пользователя', unique=True)
+    username = models.CharField(verbose_name='Username', max_length=100, unique=True)
+    first_name = models.CharField(max_length=100, verbose_name='Имя')
+    location = models.CharField(max_length=255, verbose_name='Часовой пояс')
+    webinar = models.ForeignKey(Webinar, on_delete=models.DO_NOTHING, verbose_name='Вебинар')
+
+    def __str__(self):
+        return self.username
+
+    class Meta:
+        verbose_name = 'Пользователи телеграм'
+        verbose_name_plural = 'Пользователи телеграм'

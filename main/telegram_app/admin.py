@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
-from telegram_app.models import (
-    TelegramGroup, Mentor, TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramBot)
+from .models import (
+    TelegramGroup, Mentor, TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramBot, TelegramUser)
 
 
 class MentorAdmin(admin.ModelAdmin):
@@ -28,12 +28,17 @@ class TelegramBotAdmin(admin.ModelAdmin):
     pass
 
 
+class TelegramUserAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(TelegramGroup, TelegramGroupAdmin)
 admin.site.register(Mentor, MentorAdmin)
 admin.site.register(TelegramMessage, TelegramMessageAdmin)
 admin.site.register(InstallmentTelegram, InstallmentTelegramAdmin)
 admin.site.register(ContactUsTelegram, ContactUsTelegramAdmin)
 admin.site.register(TelegramBot, TelegramBotAdmin)
+admin.site.register(TelegramUser, TelegramUserAdmin)
 
 
 admin.site.unregister(Group)

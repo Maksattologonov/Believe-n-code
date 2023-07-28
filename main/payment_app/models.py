@@ -72,3 +72,37 @@ class TemporaryAccess(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PromoCode(models.Model):
+    name = models.CharField(max_length=20, help_text='Максимум 20 символов', verbose_name='Промокод', unique=True)
+    date_of = models.DateField(verbose_name='Дата действия промокода', default=timezone.now)
+
+    class Meta:
+        verbose_name = 'Паромокод'
+        verbose_name_plural = 'Паромокоды'
+
+    def __str__(self):
+        return self.name
+
+
+class Webinar(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Тема вебинара')
+    date_time = models.DateTimeField(default=timezone.now, verbose_name='Дата начала',
+                                     help_text='Вводите время по часовому поясу Бишкека')
+    promo_code = models.ForeignKey(PromoCode, on_delete=models.CASCADE, verbose_name='Промокод',
+                                   help_text='Только на латыни')
+    group_url = models.URLField(max_length=255, verbose_name="Ссылка на группу")
+    text = models.TextField(verbose_name='Текст напоминания')
+
+    class Meta:
+        verbose_name = 'Вебинар'
+        verbose_name_plural = 'Вебинары'
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.pk and Webinar.objects.exists():
+            return Webinar.objects.update_or_create(*args, **kwargs)
+        return super(Webinar, self).save(*args, **kwargs)

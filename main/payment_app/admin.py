@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Tariff, PayboxSuccessPay, TemporaryAccess
+from .models import Course, Tariff, PayboxSuccessPay, TemporaryAccess, PromoCode, Webinar
 
 
 class CourseAdmin(admin.ModelAdmin):
@@ -21,7 +21,17 @@ class TemporaryAccessAdmin(admin.ModelAdmin):
     list_display = ('name', 'telegram_number', 'tariff', 'course', 'start_date')
 
 
+class PromoCodeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'date_of',)
+
+
+class WebinarAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Tariff, TariffAdmin)
 admin.site.register(PayboxSuccessPay, PayboxSuccessPayAdmin)
 admin.site.register(TemporaryAccess, TemporaryAccessAdmin)
+admin.site.register(PromoCode, PromoCodeAdmin)
+admin.site.register(Webinar, WebinarAdmin)

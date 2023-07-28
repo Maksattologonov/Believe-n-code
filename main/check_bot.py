@@ -11,3 +11,6 @@ def check_date(update, context):
     if date_diff.days > 1:
         message = "Разница между датой в базе данных и текущей датой больше одного дня!"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+
+
