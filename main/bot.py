@@ -101,9 +101,9 @@ class TelegramBot:
                                      text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
         elif update.message.text == '/start webinar':
             user = update.message.from_user
-            keyboard = [[InlineKeyboardButton(text="Вы в городе Бишкек, Алматы", callback_data='Бишкек, Алматы')],
-                        [InlineKeyboardButton(text="Вы в городе Ташкент, Душанбе", callback_data='Ташкент, Душанбе')],
-                        [InlineKeyboardButton(text="Вы в городе Баку", callback_data='Баку')]]
+            keyboard = [[InlineKeyboardButton(text="Бишкек, Алматы", callback_data='Бишкек, Алматы')],
+                        [InlineKeyboardButton(text="Ташкент, Душанбе", callback_data='Ташкент, Душанбе')],
+                        [InlineKeyboardButton(text="Баку", callback_data='Баку')]]
             reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=f"Привет, {user.first_name}! Выбери свой город.",
