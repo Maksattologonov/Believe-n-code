@@ -1,19 +1,19 @@
 import logging
 import os
-import requests
 
 import django
 from decouple import config
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup, KeyboardButton, \
     ReplyKeyboardRemove
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater, CallbackQueryHandler
-from geopy.geocoders import Nominatim
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
 
-from telegram_app.models import TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramGroup, TelegramUser, TelegramAdmin
+from telegram_app.models import TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramGroup, TelegramUser,\
+    TelegramAdmin
+from payment_app.models import Webinar
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -77,12 +77,11 @@ class TelegramBot:
         text1, manager1 = cls.get_contact_message()
         text2, manager2 = cls.get_installment_message()
         logger.info("User %s started the conversation.", user.first_name)
-        if update.message.chat_id in cls.get_admin():
-            update.message.reply_text("Привет! Я бот с кнопкой под полем ввода текста. Напишите что-нибудь:",
-                                      reply_markup=cls.get_keyboard(update))
-        else:
-            update.message.reply_text("Вы не являетесь администратором и не имеете доступа к кнопке 'Рассылка'.",
-                                      reply_markup=ReplyKeyboardRemove())
+        # if update.message.chat_id in cls.get_admin():
+        #     update.message.reply_text("Напишите текст для рассылки",
+        #                               reply_markup=cls.get_keyboard(update))
+        # else:
+        #     pass
 
         keyboard = [[
             InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
@@ -109,6 +108,16 @@ class TelegramBot:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=f"Привет, {user.first_name}! Выбери свой город.",
                                      reply_markup=reply_markup)
+            try:
+                tg_user = TelegramUser(user_id=update.message.chat_id,
+                                       username=user.username,
+                                       first_name=user.first_name,
+                                       location='+6',
+                                       webinar=Webinar.objects.get())
+                tg_user.save()
+            except Exception as ex:
+                pass
+
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',
                                      reply_markup=reply_markup)
@@ -153,8 +162,7 @@ class TelegramBot:
             update.message.reply_text("Рассылка сообщений начата!")
             cls.send_all(context)
         else:
-            update.message.reply_text("Вы не являетесь администратором и не можете использовать кнопку 'Рассылка'.",
-                                      reply_markup=ReplyKeyboardRemove())
+            pass
 
     @classmethod
     def get_keyboard(cls, update):
@@ -187,7 +195,7 @@ def main() -> None:
     updater.start_polling(timeout=3600)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", tg_bot.start))
-    welcome_handler = MessageHandler(Filters.status_update.new_chat_members, tg_bot.add_to_group)
+    # welcome_handler = MessageHandler(Filters.status_update.new_chat_members, tg_bot.add_to_group)
     dispatcher.add_handler(CallbackQueryHandler(tg_bot.button))
     dispatcher.add_handler(MessageHandler(Filters.regex('^Рассылка$'), tg_bot.broadcast))
     dispatcher.add_error_handler(tg_bot.error)
