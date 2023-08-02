@@ -1,16 +1,19 @@
 import logging
 import os
+import requests
 
 import django
 from decouple import config
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup, KeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup, KeyboardButton, \
+    ReplyKeyboardRemove
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater, CallbackQueryHandler
+from geopy.geocoders import Nominatim
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
 
-from telegram_app.models import TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramGroup, TelegramUser
-from payment_app.models import Webinar
+from telegram_app.models import TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramGroup, TelegramUser, TelegramAdmin
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,6 +21,11 @@ logger = logging.getLogger(__name__)
 
 class TelegramBot:
     update_user: Update
+
+    @staticmethod
+    def get_admin():
+        queryset = TelegramAdmin.objects.all()
+        return list(queryset.values_list('id', flat=True))
 
     @staticmethod
     def get_message():
@@ -37,10 +45,9 @@ class TelegramBot:
     @staticmethod
     def send_all(context: CallbackContext):
         users = TelegramUser.objects.all()
-
         for i in users:
             try:
-                context.bot.send_message(chat_id=i.user_id, text=str(i.webinar__text))
+                context.bot.send_message(chat_id=i.user_id, text=i.webinar.text)
             except Exception as ex:
                 pass
 
@@ -53,6 +60,7 @@ class TelegramBot:
     def build_menu(buttons, n_cols,
                    header_buttons=None,
                    footer_buttons=None):
+        """функия для красивого разделения кнопок"""
         menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
         if header_buttons:
             menu.insert(0, [header_buttons])
@@ -62,19 +70,19 @@ class TelegramBot:
 
     @classmethod
     def start(cls, update: Update, context: CallbackContext) -> None:
+        """большая функция старт, принимает query params и в зависимости от них отвечает и выводит кнопки"""
         user = update.message.from_user
         cls.update_user = update
         text, manager = cls.get_message()
         text1, manager1 = cls.get_contact_message()
         text2, manager2 = cls.get_installment_message()
         logger.info("User %s started the conversation.", user.first_name)
-
-        if update.message.chat_id == 504416149:
-            keyboard1 = [[
-                InlineKeyboardButton('Отправить рассылку', callback_data='sendall')]]
-            reply_markup1 = InlineKeyboardMarkup(keyboard1)
-            update.message.reply_text(
-                text="Выберите удобное вам время", reply_markup=reply_markup1)
+        if update.message.chat_id in cls.get_admin():
+            update.message.reply_text("Привет! Я бот с кнопкой под полем ввода текста. Напишите что-нибудь:",
+                                      reply_markup=cls.get_keyboard(update))
+        else:
+            update.message.reply_text("Вы не являетесь администратором и не имеете доступа к кнопке 'Рассылка'.",
+                                      reply_markup=ReplyKeyboardRemove())
 
         keyboard = [[
             InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
@@ -93,28 +101,14 @@ class TelegramBot:
             context.bot.send_message(update.message.chat_id,
                                      text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
         elif update.message.text == '/start webinar':
-            location = [
-                [InlineKeyboardButton("Бишкек GMT+6", callback_data='Бишкек')],
-                [InlineKeyboardButton("Алматы GMT+6", callback_data='Алматы')],
-                [InlineKeyboardButton("Ташкент GMT+5", callback_data='Ташкент')],
-                [InlineKeyboardButton("Душанбе GMT+5", callback_data='Душанбе')],
-                [InlineKeyboardButton("Баку GMT+4", callback_data='Баку')]]
-            reply_location = InlineKeyboardMarkup(location)
-            update.message.reply_text(
-                text="Выберите удобное вам время", reply_markup=reply_location
-            )
-            button = [[
-                InlineKeyboardButton("Перейти", url=Webinar.objects.get().group_url)]]
-            button_link = InlineKeyboardMarkup(button)
-            context.bot.send_message(chat_id=update.message.chat_id, text='Перейти в группу',
-                                     reply_markup=button_link)
-            try:
-                object = TelegramUser(user_id=update.message.chat_id, username=update.message.from_user.username,
-                                      first_name=update.message.from_user.first_name,
-                                      webinar=Webinar.objects.all().first())
-                object.save()
-            except Exception as ex:
-                pass
+            user = update.message.from_user
+            keyboard = [[InlineKeyboardButton(text="Вы в городе Бишкек, Алматы", callback_data='Бишкек, Алматы')],
+                        [InlineKeyboardButton(text="Вы в городе Ташкент, Душанбе", callback_data='Ташкент, Душанбе')],
+                        [InlineKeyboardButton(text="Вы в городе Баку", callback_data='Баку')]]
+            reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=f"Привет, {user.first_name}! Выбери свой город.",
+                                     reply_markup=reply_markup)
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',
                                      reply_markup=reply_markup)
@@ -125,9 +119,8 @@ class TelegramBot:
 
     @classmethod
     def handle_message(cls, update, context):
-        text = update.message.text
+        """функция эхл, отвечает на сообщение и передает их администратору"""
         message = update.message
-        user = message.from_user
         reply_to_message = message.reply_to_message
         text, manager = cls.get_message()
         if reply_to_message:
@@ -142,6 +135,7 @@ class TelegramBot:
 
     @classmethod
     def add_to_group(cls, update: Update, context: CallbackContext) -> None:
+        """функция отправляет сообщение при добавлении в группу"""
         text = cls.get_group_message()
         new_members = update.message.new_chat_members
         for member in new_members:
@@ -153,46 +147,54 @@ class TelegramBot:
         logger.warning('Update "%s" caused error "%s"', update, context.error)
 
     @classmethod
-    def button(cls, update, context: CallbackContext):
+    def broadcast(cls, update, context):
+        """функция рассылки работает только с админ id"""
+        if update.message.from_user.id in cls.get_admin():
+            update.message.reply_text("Рассылка сообщений начата!")
+            cls.send_all(context)
+        else:
+            update.message.reply_text("Вы не являетесь администратором и не можете использовать кнопку 'Рассылка'.",
+                                      reply_markup=ReplyKeyboardRemove())
 
+    @classmethod
+    def get_keyboard(cls, update):
+        """выводим кнопку для рассылки"""
+        keyboard = [["Рассылка"]] if update.message.from_user.id in cls.get_admin() else []
+        return ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
+
+    @classmethod
+    def button(cls, update, context: CallbackContext):
+        """Ловим ответ, какая кнопка была нажата"""
         query = update.callback_query
         variant = query.data
         instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
         match variant:
-            case 'Бишкек':
-                instance.update(location='Бишкек')
-            case 'Алматы':
-                instance.update(location='Алматы')
-            case 'Ташкент':
-                instance.update(location='Ташкент')
-            case 'Душанбе':
-                instance.update(location='Душанбе')
+            case 'Бишкек, Алматы':
+                instance.update(location='+6')
+            case 'Ташкент, Душанбе':
+                instance.update(location='+5')
             case 'Баку':
-                instance.update(location='Баку')
-            case 'sendall':
-                cls.send_all(context)
+                instance.update(location='+4')
             case _:
-                instance.update(location='Бишкек')
+                instance.update(location='+6')
         query.answer()
-        query.edit_message_text(text=f"Ответ записан")
+        query.edit_message_text(text=f"Спасибо, ваш ответ записан")
 
 
 def main() -> None:
-    tg_bot = TelegramBot
+    tg_bot = TelegramBot()
     updater = Updater(config('TG_TOKEN'))
     updater.start_polling(timeout=3600)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", tg_bot.start))
     welcome_handler = MessageHandler(Filters.status_update.new_chat_members, tg_bot.add_to_group)
-    message_handler = MessageHandler(Filters.text, tg_bot.handle_message)
-    dispatcher.add_handler(
-        CallbackQueryHandler(TelegramBot.button, pass_update_queue=True, pass_user_data=False, pass_chat_data=False))
-    dispatcher.add_handler(welcome_handler)
-    dispatcher.add_handler(message_handler)
+    dispatcher.add_handler(CallbackQueryHandler(tg_bot.button))
+    dispatcher.add_handler(MessageHandler(Filters.regex('^Рассылка$'), tg_bot.broadcast))
     dispatcher.add_error_handler(tg_bot.error)
 
     updater.start_polling()
     updater.idle()
 
 
-main()
+if __name__ == "__main__":
+    main()

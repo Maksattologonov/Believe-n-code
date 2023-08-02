@@ -112,3 +112,14 @@ class TelegramUser(models.Model):
     class Meta:
         verbose_name = 'Пользователи телеграм'
         verbose_name_plural = 'Пользователи телеграм'
+
+
+class TelegramAdmin(models.Model):
+    id = models.BigIntegerField(primary_key=True, unique=True, verbose_name="Телеграм ID")
+
+    class Meta:
+        verbose_name = 'Администратор Telegram'
+        verbose_name_plural = 'Администраторы Telegram'
+
+    def __str__(self):
+        return str(self.id)
