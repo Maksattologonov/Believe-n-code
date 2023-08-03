@@ -7,11 +7,10 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKe
     ReplyKeyboardRemove
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater, CallbackQueryHandler
 
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
 
-from telegram_app.models import TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramGroup, TelegramUser,\
+from telegram_app.models import TelegramMessage, ContactUsTelegram, InstallmentTelegram, TelegramGroup, TelegramUser, \
     TelegramAdmin
 from payment_app.models import Webinar
 
@@ -106,7 +105,9 @@ class TelegramBot:
                         [InlineKeyboardButton(text="Баку", callback_data='Баку')]]
             reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=f"Привет, {user.first_name}! Выбери свой город.",
+                                     text=f'Здравствуйте {user.first_name}, как вам идея IT Фриланса? Готовы зажечь? 😃подключайтесь к нашему онлайн вебинару “Секреты твоего первого заказа на фрилансе”'
+                                          ' Узнайте абсолютно все о карьере в IT, и том как правильно окунуться в мир фриланса с нуля до первого заказа'
+                                          ' выберите ваш город',
                                      reply_markup=reply_markup)
             try:
                 tg_user = TelegramUser(user_id=update.message.chat_id,
@@ -175,18 +176,23 @@ class TelegramBot:
         """Ловим ответ, какая кнопка была нажата"""
         query = update.callback_query
         variant = query.data
+        time = ''
         instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
         match variant:
             case 'Бишкек, Алматы':
                 instance.update(location='+6')
+                time = '+6'
             case 'Ташкент, Душанбе':
                 instance.update(location='+5')
+                time = '5'
             case 'Баку':
                 instance.update(location='+4')
+                time = '+4'
             case _:
                 instance.update(location='+6')
         query.answer()
-        query.edit_message_text(text=f"Спасибо, ваш ответ записан")
+        query.edit_message_text(text=f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса, "
+                                     f"ваш часовой пояс {time}")
 
 
 def main() -> None:
