@@ -176,39 +176,46 @@ class TelegramBot:
     @classmethod
     def button(cls, update, context: CallbackContext):
         """Ловим ответ, какая кнопка была нажата"""
-        query = update.callback_query
-        variant = query.data
-        instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
-        time = str(Webinar.objects.get().date_time)
-        formatted_date_time = convert_and_subtract_hours(time, 0)
-        match variant:
-            case 'Бишкек, Алматы':
-                instance.update(location='+6')
-            case 'Ташкент, Душанбе':
-                instance.update(location='+5')
-                formatted_date_time = convert_and_subtract_hours(time, 1)
-            case 'Баку':
-                instance.update(location='+4')
-                formatted_date_time = convert_and_subtract_hours(time, 2)
-            case _:
-                instance.update(location='+6')
-        query.answer()
-        query.edit_message_text(text=f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса! "
-                                     f"Вебинар состоится {formatted_date_time} по вашему времени. Увидимся онлайн 😁")
+        try:
+            query = update.callback_query
+            variant = query.data
+            instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
+            time = str(Webinar.objects.get().date_time)
+            formatted_date_time = convert_and_subtract_hours(time, 0)
+            match variant:
+                case 'Бишкек, Алматы':
+                    instance.update(location='+6')
+                case 'Ташкент, Душанбе':
+                    instance.update(location='+5')
+                    formatted_date_time = convert_and_subtract_hours(time, 1)
+                case 'Баку':
+                    instance.update(location='+4')
+                    formatted_date_time = convert_and_subtract_hours(time, 2)
+                case _:
+                    instance.update(location='+6')
+            query.answer()
+            query.edit_message_text(text=f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса! "
+                                         f"Вебинар состоится {formatted_date_time} по вашему времени. Увидимся онлайн 😁")
+        except Exception as ex:
+            pass
 
 
 def main() -> None:
     tg_bot = TelegramBot()
     updater = Updater(config('TG_TOKEN'))
-    updater.start_polling()
-    dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("start", tg_bot.start))
-    dispatcher.add_handler(CallbackQueryHandler(tg_bot.button))
-    dispatcher.add_handler(MessageHandler(Filters.regex('^Рассылка$'), tg_bot.broadcast))
-    dispatcher.add_error_handler(tg_bot.error)
+    while True:
+        try:
+            updater.start_polling()
+        except Exception as e:
+            print(f"Произошла ошибка: {e}")
+        dispatcher = updater.dispatcher
+        dispatcher.add_handler(CommandHandler("start", tg_bot.start))
+        dispatcher.add_handler(CallbackQueryHandler(tg_bot.button))
+        dispatcher.add_handler(MessageHandler(Filters.regex('^Рассылка$'), tg_bot.broadcast))
+        dispatcher.add_error_handler(tg_bot.error)
 
-    updater.start_polling()
-    updater.idle()
+        updater.start_polling()
+        updater.idle()
 
 
 main()
