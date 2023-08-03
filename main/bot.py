@@ -180,7 +180,6 @@ class TelegramBot:
         variant = query.data
         instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
         time = str(Webinar.objects.get().date_time)
-        print(Webinar.objects.get().date_time)
         formatted_date_time = convert_and_subtract_hours(time, 0)
         match variant:
             case 'Бишкек, Алматы':
@@ -204,7 +203,6 @@ def main() -> None:
     updater.start_polling()
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", tg_bot.start))
-    # welcome_handler = MessageHandler(Filters.status_update.new_chat_members, tg_bot.add_to_group)
     dispatcher.add_handler(CallbackQueryHandler(tg_bot.button))
     dispatcher.add_handler(MessageHandler(Filters.regex('^Рассылка$'), tg_bot.broadcast))
     dispatcher.add_error_handler(tg_bot.error)
