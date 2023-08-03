@@ -1,11 +1,13 @@
 import logging
 import os
-
 import django
+
+from datetime import datetime, timedelta
 from decouple import config
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup, KeyboardButton, \
     ReplyKeyboardRemove
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater, CallbackQueryHandler
+from common.services import convert_and_subtract_hours
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 django.setup()
@@ -176,29 +178,30 @@ class TelegramBot:
         """Ловим ответ, какая кнопка была нажата"""
         query = update.callback_query
         variant = query.data
-        time = ''
         instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
+        time = str(Webinar.objects.get().date_time)
+        print(Webinar.objects.get().date_time)
+        formatted_date_time = convert_and_subtract_hours(time, 0)
         match variant:
             case 'Бишкек, Алматы':
                 instance.update(location='+6')
-                time = 'GMT +6'
             case 'Ташкент, Душанбе':
                 instance.update(location='+5')
-                time = 'GMT +5'
+                formatted_date_time = convert_and_subtract_hours(time, 1)
             case 'Баку':
                 instance.update(location='+4')
-                time = 'GMT +4'
+                formatted_date_time = convert_and_subtract_hours(time, 2)
             case _:
                 instance.update(location='+6')
         query.answer()
         query.edit_message_text(text=f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса, "
-                                     f"ваш часовой пояс {time}")
+                                     f"вебинар состоится {formatted_date_time} по вашему времени. Увидимся онлайн!")
 
 
 def main() -> None:
     tg_bot = TelegramBot()
     updater = Updater(config('TG_TOKEN'))
-    updater.start_polling(timeout=3600)
+    updater.start_polling()
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", tg_bot.start))
     # welcome_handler = MessageHandler(Filters.status_update.new_chat_members, tg_bot.add_to_group)
