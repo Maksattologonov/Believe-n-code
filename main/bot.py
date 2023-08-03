@@ -181,13 +181,13 @@ class TelegramBot:
         match variant:
             case 'Бишкек, Алматы':
                 instance.update(location='+6')
-                time = '+6'
+                time = 'GMT +6'
             case 'Ташкент, Душанбе':
                 instance.update(location='+5')
-                time = '5'
+                time = 'GMT +5'
             case 'Баку':
                 instance.update(location='+4')
-                time = '+4'
+                time = 'GMT +4'
             case _:
                 instance.update(location='+6')
         query.answer()
