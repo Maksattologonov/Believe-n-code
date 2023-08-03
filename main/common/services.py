@@ -2,7 +2,6 @@ import hashlib
 import xml.etree.ElementTree as ET
 import requests
 
-import locale
 from datetime import datetime, timedelta
 
 
@@ -25,7 +24,6 @@ def build_paybox_signature(params, secret_key):
 
 
 def convert_and_subtract_hours(time_str, hours_to_subtract):
-    locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
     dt = datetime.fromisoformat(time_str.replace('Z', '+00:00'))
     new_time = dt - timedelta(hours=hours_to_subtract)
     formatted_new_time = new_time.strftime('%d-%m-%Y %H:%M:%S')
