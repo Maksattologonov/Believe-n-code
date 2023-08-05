@@ -161,7 +161,7 @@ class TelegramBot:
     @classmethod
     def broadcast(cls, update, context):
         """функция рассылки работает только с админ id"""
-        if update.message.from_user.id in cls.get_admin():
+        if update.message.from_user.id == '504416149':
             update.message.reply_text("Рассылка сообщений начата!")
             cls.send_all(context)
         else:
@@ -170,7 +170,7 @@ class TelegramBot:
     @classmethod
     def get_keyboard(cls, update):
         """выводим кнопку для рассылки"""
-        keyboard = [["Рассылка"]] if update.message.from_user.id in cls.get_admin() else []
+        keyboard = [["Рассылка"]] if update.message.from_user.id == '504416149' else []
         return ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
 
     @classmethod

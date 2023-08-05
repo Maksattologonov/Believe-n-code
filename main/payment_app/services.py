@@ -2,8 +2,8 @@ import re
 
 from django.db import IntegrityError
 
-from common.exceptions import ObjectNotFoundException, UniqueObjectException, TypeErrorException
-from .models import Tariff, Course, PayboxSuccessPay, TemporaryAccess
+from common.exceptions import ObjectNotFoundException, UniqueObjectException, TypeErrorException, IncorrectCodeException
+from .models import Tariff, Course, PayboxSuccessPay, TemporaryAccess, Webinar, PromoCode
 
 
 class PayboxService:
@@ -71,7 +71,7 @@ class TemporaryAccessService:
     @classmethod
     def get(cls, **filters):
         try:
-            obj = cls.model.objects.filter(**filters)
+            return cls.model.objects.filter(**filters)
         except cls.model.DoesNotExist:
             raise ObjectNotFoundException('Object not found')
 
@@ -92,3 +92,29 @@ class TemporaryAccessService:
             raise ObjectNotFoundException('Course not found')
         except IntegrityError:
             raise UniqueObjectException('Unique error')
+
+
+class WebinarService:
+    model = Webinar
+
+    @classmethod
+    def get(cls, **filters):
+        try:
+            return cls.model.objects.get(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Object not found')
+
+    @classmethod
+    def filter(cls, **filters):
+        try:
+            return cls.model.objects.filter(**filters)
+        except cls.model.DoesNotExist:
+            raise ObjectNotFoundException('Object not found')
+
+    @classmethod
+    def check_promo_code(cls, code: str):
+        model_code = PromoCode.objects.get().name
+        if model_code == code:
+            return True
+        else:
+            raise IncorrectCodeException('Wrong code')

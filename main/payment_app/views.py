@@ -12,8 +12,9 @@ from rest_framework.views import APIView
 
 from telegram_app.models import TelegramGroup
 from .models import PayboxSuccessPay, Course
-from .serializers import TariffSerializer, CourseSerializer, TemporaryAccessSerializer
-from .services import PayboxService, CourseService, PayboxCallbackService, TemporaryAccessService
+from .serializers import TariffSerializer, CourseSerializer, TemporaryAccessSerializer, WebinarSerializer, \
+    PromoCodeSerializer
+from .services import PayboxService, CourseService, PayboxCallbackService, TemporaryAccessService, WebinarService
 
 
 class CourseView(APIView):
@@ -98,3 +99,13 @@ class TemporaryAccessAPIView(APIView):
         if url:
             return Response(data=url, status=status.HTTP_201_CREATED)
 
+
+class WebinarAPIView(APIView):
+    def get(self, *args, **kwargs):
+        queryset = WebinarService.get()
+        serializer = WebinarSerializer(queryset, many=False)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, *args):
+        if WebinarService.check_promo_code(code=self.request.data.get('name')):
+            return Response(data=True, status=status.HTTP_200_OK)

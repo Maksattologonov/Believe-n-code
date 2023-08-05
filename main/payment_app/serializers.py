@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from common.services import build_paybox_signature
-from .models import Course, Tariff, TemporaryAccess
+from .models import Course, Tariff, TemporaryAccess, Webinar, PromoCode
 
 from decouple import config
 
@@ -42,3 +42,17 @@ class TemporaryAccessSerializer(serializers.Serializer):
     telegram_number = serializers.CharField()
     tariff = serializers.CharField()
     course = serializers.CharField()
+
+
+class PromoCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PromoCode
+        fields = ('name',)
+
+
+class WebinarSerializer(serializers.ModelSerializer):
+    promo_code = serializers.CharField(source='promo_code.name', read_only=True)
+
+    class Meta:
+        model = Webinar
+        fields = ('id', 'title', 'date_time', 'promo_code', 'text')
