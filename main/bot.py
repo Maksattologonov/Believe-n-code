@@ -78,11 +78,11 @@ class TelegramBot:
         text1, manager1 = cls.get_contact_message()
         text2, manager2 = cls.get_installment_message()
         logger.info("User %s started the conversation.", user.first_name)
-        # if update.message.chat_id in cls.get_admin():
-        #     update.message.reply_text("Напишите текст для рассылки",
-        #                               reply_markup=cls.get_keyboard(update))
-        # else:
-        #     pass
+        if update.message.chat_id in cls.get_admin():
+            update.message.reply_text("Рассылка",
+                                      reply_markup=cls.get_keyboard(update.message.chat_id))
+        else:
+            pass
 
         keyboard = [[
             InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
@@ -161,7 +161,7 @@ class TelegramBot:
     @classmethod
     def broadcast(cls, update, context):
         """функция рассылки работает только с админ id"""
-        if update.message.from_user.id == '504416149':
+        if update.message.from_user.id in cls.get_admin():
             update.message.reply_text("Рассылка сообщений начата!")
             cls.send_all(context)
         else:
@@ -170,7 +170,7 @@ class TelegramBot:
     @classmethod
     def get_keyboard(cls, update):
         """выводим кнопку для рассылки"""
-        keyboard = [["Рассылка"]] if update.message.from_user.id == '504416149' else []
+        keyboard = [["Рассылка"]] if update in cls.get_admin() else []
         return ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
 
     @classmethod
