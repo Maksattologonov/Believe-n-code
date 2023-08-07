@@ -88,7 +88,8 @@ DATABASES = {
     }
 }
 
-CSRF_TRUSTED_ORIGINS = ['https://www.believencode.online/', 'https://*.believencode.online']
+CSRF_TRUSTED_ORIGINS = ['https://www.believencode.online/', 'https://*.believencode.online',
+                        'https://adcf-185-53-230-241.ngrok-free.app']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

@@ -20,7 +20,7 @@ def build_paybox_signature(params, secret_key):
             pg_redirect_url = root.find('pg_redirect_url').text
             return pg_redirect_url
     else:
-        print('Ошибка при отправке запроса:', response.status_code, response.text)
+        pass
 
 
 def convert_and_subtract_hours(time_str, hours_to_subtract):

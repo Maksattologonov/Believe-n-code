@@ -7,6 +7,11 @@ from decouple import config
 
 
 class TariffSerializer(serializers.ModelSerializer):
+    discount_price = serializers.SerializerMethodField()
+
+    def get_discount_price(self, obj):
+        return round(obj.price * 0.8)
+
     class Meta:
         model = Tariff
         fields = "__all__"
@@ -14,12 +19,13 @@ class TariffSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
+    discount_url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         params = {
             'pg_order_id': obj.id,
             'pg_merchant_id': int(config('PAYBOX_MERCHANT_ID')),
-            'pg_amount': obj.type.new_price,
+            'pg_amount': obj.type.price,
             'pg_currency': 'USD',
             'pg_description': obj.type.description,
             'pg_salt': f'Оплата за {obj.name}, по тарифу {obj.type}',
@@ -31,9 +37,25 @@ class CourseSerializer(serializers.ModelSerializer):
         secret_key = str(config('PAYBOX_SECRET_KEY'))
         return build_paybox_signature(params, secret_key)
 
+    def get_discount_url(self, obj):
+        params = {
+            'pg_order_id': obj.id,
+            'pg_merchant_id': int(config('PAYBOX_MERCHANT_ID')),
+            'pg_amount': int(obj.type.price)*0.8,
+            'pg_currency': 'USD',
+            'pg_description': obj.type.description,
+            'pg_salt': f'Оплата за {obj.name}, по тарифу {obj.type} со скидкой',
+            # 'pg_result_url': str(config('PAYBOX_RESULT_URL')),
+            'pg_testing_mode': int(config('PAYBOX_TESTING_MODE')),
+            'pg_param1': obj.name,
+            'pg_param2': obj.type.name
+        }
+        secret_key = str(config('PAYBOX_SECRET_KEY'))
+        return build_paybox_signature(params, secret_key)
+
     class Meta:
         model = Course
-        fields = ('id', 'name', 'url', 'temporary_lms_url')
+        fields = ('id', 'name', 'url', 'discount_url')
 
 
 class TemporaryAccessSerializer(serializers.Serializer):

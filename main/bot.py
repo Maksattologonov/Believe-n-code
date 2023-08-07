@@ -22,11 +22,17 @@ logger = logging.getLogger(__name__)
 
 class TelegramBot:
     update_user: Update
+    btn_pressed = False
 
     @staticmethod
     def get_admin():
         queryset = TelegramAdmin.objects.all()
         return list(queryset.values_list('id', flat=True))
+
+    @staticmethod
+    def get_users():
+        queryset = TelegramUser.objects.all()
+        return list(queryset.values_list('user_id', flat=True))
 
     @staticmethod
     def get_message():
@@ -70,6 +76,21 @@ class TelegramBot:
         return menu
 
     @classmethod
+    def present(cls, update, context):
+        users = TelegramUser.objects.all()
+        for i in users:
+            try:
+                keyboard = [
+                    [InlineKeyboardButton("Получить бесплатный доступ", callback_data='one_day_free')],
+                    [InlineKeyboardButton("Получить скидку на курсы", callback_data='discount')]
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                context.bot.send_message(chat_id=i.user_id, text='Пожалуйста, выберите одну из подарков:',
+                                         reply_markup=reply_markup)
+            except Exception as ex:
+                pass
+
+    @classmethod
     def start(cls, update: Update, context: CallbackContext) -> None:
         """большая функция старт, принимает query params и в зависимости от них отвечает и выводит кнопки"""
         user = update.message.from_user
@@ -79,11 +100,15 @@ class TelegramBot:
         text2, manager2 = cls.get_installment_message()
         logger.info("User %s started the conversation.", user.first_name)
         if update.message.chat_id in cls.get_admin():
-            update.message.reply_text("Рассылка",
-                                      reply_markup=cls.get_keyboard(update.message.chat_id))
+            keyboard = [
+                [InlineKeyboardButton("Рассылка", callback_data='send_all')],
+                [InlineKeyboardButton("Отправить подарки", callback_data='present')]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            update.message.reply_text('Выберите действие:', reply_markup=reply_markup)
+
         else:
             pass
-
         keyboard = [[
             InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -107,8 +132,10 @@ class TelegramBot:
                         [InlineKeyboardButton(text="Баку", callback_data='Баку')]]
             reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=f'Здравствуйте {user.first_name}, как вам идея IT Фриланса? Готовы зажечь? 😃подключайтесь к нашему онлайн вебинару “Секреты твоего первого заказа на фрилансе”'
-                                          ' Узнайте абсолютно все о карьере в IT, и том как правильно окунуться в мир фриланса с нуля до первого заказа'
+                                     text=f'Здравствуйте {user.first_name}, как вам идея IT Фриланса? Готовы зажечь? '
+                                          f'😃подключайтесь к нашему онлайн вебинару “Секреты твоего первого заказа '
+                                          f'на фрилансе” Узнайте абсолютно все о карьере в IT, и том как правильно'
+                                          f' окунуться в мир фриланса с нуля до первого заказа'
                                           ' выберите ваш город',
                                      reply_markup=reply_markup)
             try:
@@ -161,16 +188,26 @@ class TelegramBot:
     @classmethod
     def broadcast(cls, update, context):
         """функция рассылки работает только с админ id"""
-        if update.message.from_user.id in cls.get_admin():
-            update.message.reply_text("Рассылка сообщений начата!")
+        if update.callback_query.message.chat_id in cls.get_admin() and cls.btn_pressed:
+            update.callback_query.message.reply_text("Рассылка сообщений начата!")
             cls.send_all(context)
         else:
             pass
 
     @classmethod
+    def directions(cls, update, context):
+        keyboard = [[InlineKeyboardButton(text="Front-End", callback_data='Front-End')],
+                    [InlineKeyboardButton(text="Графический Дизайн", callback_data='Графический Дизайн')],
+                    [InlineKeyboardButton(text="UX/UI", callback_data='UX/UI')]]
+        reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+        context.bot.send_message(chat_id=update.effective_chat.id, text='Выберите направление:',
+                                 reply_markup=reply_markup)
+        update.callback_query.message.delete()
+
+    @classmethod
     def get_keyboard(cls, update):
         """выводим кнопку для рассылки"""
-        keyboard = [["Рассылка"]] if update in cls.get_admin() else []
+        keyboard = [["Рассылка"], ["Отправить подарок"]] if update in cls.get_admin() else []
         return ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
 
     @classmethod
@@ -182,20 +219,44 @@ class TelegramBot:
             instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
             time = str(Webinar.objects.get().date_time)
             formatted_date_time = convert_and_subtract_hours(time, 0)
+            text = lambda \
+                    text: f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса! Вебинар состоится {text} по вашему времени. Увидимся онлайн 😁"
             match variant:
                 case 'Бишкек, Алматы':
                     instance.update(location='+6')
+                    query.edit_message_text(text=text(formatted_date_time))
                 case 'Ташкент, Душанбе':
                     instance.update(location='+5')
                     formatted_date_time = convert_and_subtract_hours(time, 1)
+                    query.edit_message_text(text=text(formatted_date_time))
                 case 'Баку':
                     instance.update(location='+4')
                     formatted_date_time = convert_and_subtract_hours(time, 2)
-                case _:
-                    instance.update(location='+6')
+                    query.edit_message_text(text=text(formatted_date_time))
+                case 'discount':
+                    context.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                             text='https://believencode.io/#billing-rate')
+                    query.message.delete()
+                case 'one_day_free':
+                    cls.directions(update, context)
+                case 'present':
+                    cls.present(update, context)
+                case 'send_all':
+                    cls.btn_pressed = True
+                    cls.broadcast(update, context)
+                case 'Front-End':
+                    context.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                             text='https://believencode.zenclass.ru/public/t/41ab81ec-85a9-4a67-a756-6328352adf9c')
+                    query.message.delete()
+                case 'UX/UI':
+                    context.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                             text='https://believencode.zenclass.ru/public/t/69e08e7e-72b3-4ff4-a6f8-90773861bcc0')
+                    query.message.delete()
+                case 'Графический Дизайн':
+                    context.bot.send_message(chat_id=update.callback_query.message.chat_id,
+                                             text='https://believencode.zenclass.ru/public/t/bd92a0c8-f7fa-4e08-9304-2324d7ff6adb')
+                    query.message.delete()
             query.answer()
-            query.edit_message_text(text=f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса! "
-                                         f"Вебинар состоится {formatted_date_time} по вашему времени. Увидимся онлайн 😁")
         except Exception as ex:
             pass
 
@@ -207,11 +268,12 @@ def main() -> None:
         try:
             updater.start_polling()
         except Exception as e:
-            print(f"Произошла ошибка: {e}")
+            pass
         dispatcher = updater.dispatcher
         dispatcher.add_handler(CommandHandler("start", tg_bot.start))
         dispatcher.add_handler(CallbackQueryHandler(tg_bot.button))
         dispatcher.add_handler(MessageHandler(Filters.regex('^Рассылка$'), tg_bot.broadcast))
+        dispatcher.add_handler(MessageHandler(Filters.regex('^Отправить подарок'), tg_bot.present))
         dispatcher.add_error_handler(tg_bot.error)
 
         updater.start_polling()

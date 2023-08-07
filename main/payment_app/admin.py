@@ -8,8 +8,8 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class TariffAdmin(admin.ModelAdmin):
-    list_display = ('name', 'new_price')
-    search_fields = ('name', 'new_price')
+    list_display = ('name', 'price')
+    search_fields = ('name', 'price')
 
 
 class PayboxSuccessPayAdmin(admin.ModelAdmin):

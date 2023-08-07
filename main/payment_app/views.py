@@ -107,5 +107,5 @@ class WebinarAPIView(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def post(self, *args):
-        if WebinarService.check_promo_code(code=self.request.data.get('name')):
+        if WebinarService.check_promo_code(code=self.request.data.get('promocode')):
             return Response(data=True, status=status.HTTP_200_OK)

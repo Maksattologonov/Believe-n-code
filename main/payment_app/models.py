@@ -7,8 +7,7 @@ from django.utils import timezone
 class Tariff(models.Model):
     name = models.CharField(max_length=50, verbose_name="Название тарифа")
     description = models.TextField(verbose_name="Описание")
-    old_price = models.IntegerField(verbose_name="Старая цена")
-    new_price = models.IntegerField(verbose_name="Новая цена")
+    price = models.IntegerField(verbose_name="Цена")
 
     class Meta:
         verbose_name = "Тариф"
@@ -22,7 +21,7 @@ class Course(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название курса")
     type = models.ForeignKey(Tariff, verbose_name="Тариф курса", on_delete=models.CASCADE)
     lms_url = models.URLField(verbose_name="Ссылка на курс", max_length=1500)
-    temporary_lms_url = models.URLField(verbose_name="Временная ссылка на курс", max_length=1500)
+    # temporary_lms_url = models.URLField(verbose_name="Временная ссылка на курс", max_length=1500)
 
     class Meta:
         verbose_name = "Курс"

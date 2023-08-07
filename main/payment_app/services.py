@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 from django.db import IntegrityError
 
@@ -37,7 +38,7 @@ class PayboxCallbackService:
                 email=email if email else " ")
             instance.save()
         except Exception as ex:
-            print(f"Ошибка сохранения: {str(ex)}")
+            pass
 
     @classmethod
     def get(cls, **filters):
@@ -113,8 +114,12 @@ class WebinarService:
 
     @classmethod
     def check_promo_code(cls, code: str):
-        model_code = PromoCode.objects.get().name
-        if model_code == code:
-            return True
+        model_code = PromoCode.objects.get()
+        if model_code.date_of > datetime.now().date():
+            if model_code.name == code:
+                return True
+            else:
+                raise IncorrectCodeException('Неверный промокод')
         else:
-            raise IncorrectCodeException('Wrong code')
+            raise IncorrectCodeException('Срок дейстивия промокода истек')
+
