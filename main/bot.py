@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 from decouple import config
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup, KeyboardButton, \
     ReplyKeyboardRemove
-from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater, CallbackQueryHandler
+from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater, CallbackQueryHandler, \
+    ConversationHandler
 from common.services import convert_and_subtract_hours
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
@@ -102,7 +103,7 @@ class TelegramBot:
         if update.message.chat_id in cls.get_admin():
             keyboard = [
                 [InlineKeyboardButton("Рассылка", callback_data='send_all')],
-                [InlineKeyboardButton("Отправить подарки", callback_data='present')]
+                [InlineKeyboardButton("Отправить подарки", callback_data='present')],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Выберите действие:', reply_markup=reply_markup)
@@ -151,7 +152,9 @@ class TelegramBot:
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',
                                      reply_markup=reply_markup)
-            context.bot.send_message(update.message.chat_id, text=text)
+            context.bot.send_message(update.message.chat_id, text=text, reply_markup=ReplyKeyboardMarkup(
+                [[KeyboardButton(text="Поделиться номером телефона", request_contact=True)]], resize_keyboard=True,
+                one_time_keyboard=True)) 
         else:
             context.bot.send_message(update.message.chat_id,
                                      text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
@@ -211,6 +214,21 @@ class TelegramBot:
         return ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
 
     @classmethod
+    def get_phone_number(cls, update: Update, context: CallbackContext) -> None:
+        try:
+            user = TelegramUser.objects.get(user_id=update.message.chat_id)
+            user.phone_number = update.message.contact.phone_number
+            user.save()
+        except TelegramUser.DoesNotExist:
+            TelegramUser.objects.create(user_id=update.message.chat_id,
+                                        phone_number=update.message.contact.phone_number,
+                                        first_name=update.message.from_user.first_name,
+                                        location='+6',
+                                        webinar=Webinar.objects.get()
+                                        )
+        update.message.reply_text(f"Спасибо! Вы поделились номером телефона")
+
+    @classmethod
     def button(cls, update, context: CallbackContext):
         """Ловим ответ, какая кнопка была нажата"""
         try:
@@ -220,7 +238,8 @@ class TelegramBot:
             time = str(Webinar.objects.get().date_time)
             formatted_date_time = convert_and_subtract_hours(time, 0)
             text = lambda \
-                    text: f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса! Вебинар состоится {text} по вашему времени. Увидимся онлайн 😁"
+                    text: f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса! Вебинар состоится {text}" \
+                          f" по вашему времени. Увидимся онлайн 😁"
             match variant:
                 case 'Бишкек, Алматы':
                     instance.update(location='+6')
@@ -275,7 +294,7 @@ def main() -> None:
         dispatcher.add_handler(MessageHandler(Filters.regex('^Рассылка$'), tg_bot.broadcast))
         dispatcher.add_handler(MessageHandler(Filters.regex('^Отправить подарок'), tg_bot.present))
         dispatcher.add_error_handler(tg_bot.error)
-
+        dispatcher.add_handler(MessageHandler(Filters.contact, tg_bot.get_phone_number))
         updater.start_polling()
         updater.idle()
 
