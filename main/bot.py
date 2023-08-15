@@ -133,11 +133,10 @@ class TelegramBot:
                         [InlineKeyboardButton(text="Баку", callback_data='Баку')]]
             reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=f'Здравствуйте {user.first_name}, как вам идея IT Фриланса? Готовы зажечь? '
-                                          f'😃подключайтесь к нашему онлайн вебинару “Секреты твоего первого заказа '
-                                          f'на фрилансе” Узнайте абсолютно все о карьере в IT, и том как правильно'
-                                          f' окунуться в мир фриланса с нуля до первого заказа'
-                                          ' выберите ваш город',
+                                     text=f'{user.first_name} как здорово что тебе интересен наш вебинар: '
+                                          f'"Бот с искуственным интеллектом" 😁. '
+                                          f'Чтобы сказать тебе конкретное время старта занятия,'
+                                          f' нам нужно определить твой часовой пояс. Подскажи, из какого ты города?',
                                      reply_markup=reply_markup)
             try:
                 tg_user = TelegramUser(user_id=update.message.chat_id,
@@ -154,7 +153,7 @@ class TelegramBot:
                                      reply_markup=reply_markup)
             context.bot.send_message(update.message.chat_id, text=text, reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(text="Поделиться номером телефона", request_contact=True)]], resize_keyboard=True,
-                one_time_keyboard=True)) 
+                one_time_keyboard=True))
         else:
             context.bot.send_message(update.message.chat_id,
                                      text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
@@ -238,8 +237,8 @@ class TelegramBot:
             time = str(Webinar.objects.get().date_time)
             formatted_date_time = convert_and_subtract_hours(time, 0)
             text = lambda \
-                    text: f"Поздравляем вы сделали первый шаг вашего путешествия IT фриланса! Вебинар состоится {text}" \
-                          f" по вашему времени. Увидимся онлайн 😁"
+                    text: f"Поздравляю тебя дорогой друг! Теперь ты записан на вебинар который состоится {text}" \
+                          f" по твоему времени. В день вебинара ты получишь ссылку на вебинар. Увидимся онлайн! 👾"
             match variant:
                 case 'Бишкек, Алматы':
                     instance.update(location='+6')
