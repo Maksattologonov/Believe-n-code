@@ -113,13 +113,16 @@ class WebinarService:
             raise ObjectNotFoundException('Object not found')
 
     @classmethod
-    def check_promo_code(cls, code: str):
+    def check_promo_code(cls, data: str):
         model_code = PromoCode.objects.get()
-        if model_code.date_of > datetime.now().date():
-            if model_code.name == code:
-                return True
+        if 'promocode' in data:
+            if model_code.date_of >= datetime.now().date():
+                if model_code.name == data.get('promocode').strip():
+                    return True
+                else:
+                    raise IncorrectCodeException('Неверный промокод')
             else:
-                raise IncorrectCodeException('Неверный промокод')
+                raise IncorrectCodeException('Срок дейстивия промокода истек')
         else:
-            raise IncorrectCodeException('Срок дейстивия промокода истек')
+            raise IncorrectCodeException('Неправильное тело запроса')
 

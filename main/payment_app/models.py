@@ -59,7 +59,6 @@ class PayboxSuccessPay(models.Model):
 
 class TemporaryAccess(models.Model):
     name = models.CharField(max_length=255, verbose_name="Имя пользователя")
-    # email = models.EmailField(max_length=255, verbose_name="Email", unique=True)
     telegram_number = models.CharField(max_length=20, verbose_name='Телеграм номер', unique=True)
     tariff = models.ForeignKey(Tariff, on_delete=models.CASCADE, verbose_name='Тариф')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс')
@@ -92,6 +91,14 @@ class Webinar(models.Model):
     promo_code = models.ForeignKey(PromoCode, on_delete=models.CASCADE, verbose_name='Промокод',
                                    help_text='Только на латыни')
     group_url = models.URLField(max_length=255, verbose_name="Ссылка на группу")
+    welcome_text = models.TextField(verbose_name='Текст приветствия',
+                                    help_text='Обязательно оставьте {} для вставки имени пользователя, '
+                                              'наример: Привет {}!',
+                                    default='{} как здорово что ты с нами!')
+    choose_text = models.TextField(verbose_name='Текст после выбора города',
+                                   help_text='Обязательно оставьте {} для вставки имени пользователя, '
+                                             'наример: Привет {}!',
+                                   default='ваш ответ записан. Вебинар начнется в {}')
     text = models.TextField(verbose_name='Текст напоминания')
 
     class Meta:

@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 class TelegramBot:
     update_user: Update
     btn_pressed = False
+    webinar = None
+
+    def __init__(self):
+        self.webinar = Webinar.objects.get()
 
     @staticmethod
     def get_admin():
@@ -86,21 +90,26 @@ class TelegramBot:
                     [InlineKeyboardButton("Получить скидку на курсы", callback_data='discount')]
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
-                context.bot.send_message(chat_id=i.user_id, text='Пожалуйста, выберите одну из подарков:',
+                context.bot.send_message(chat_id=i.user_id, text='Пожалуйста, выберите один из подарков:',
                                          reply_markup=reply_markup)
             except Exception as ex:
                 pass
 
-    @classmethod
-    def start(cls, update: Update, context: CallbackContext) -> None:
+    def start(self, update: Update, context: CallbackContext) -> None:
         """большая функция старт, принимает query params и в зависимости от них отвечает и выводит кнопки"""
         user = update.message.from_user
-        cls.update_user = update
-        text, manager = cls.get_message()
-        text1, manager1 = cls.get_contact_message()
-        text2, manager2 = cls.get_installment_message()
+        self.update_user = update
+        text, manager = self.get_message()
+        text1, manager1 = self.get_contact_message()
+        text2, manager2 = self.get_installment_message()
         logger.info("User %s started the conversation.", user.first_name)
-        if update.message.chat_id in cls.get_admin():
+        # update.message.reply_text(text="Для связи с менеджером оставьте ваш номер телефона",
+        #                           reply_markup=InlineKeyboardMarkup(
+        #                               [[InlineKeyboardButton("Оставить",
+        #                                                      callback_data='request_contact', request_contact=True)]],
+        #                               resize_keyboard=True, one_time_keyboard=True))
+
+        if update.message.chat_id in self.get_admin():
             keyboard = [
                 [InlineKeyboardButton("Рассылка", callback_data='send_all')],
                 [InlineKeyboardButton("Отправить подарки", callback_data='present')],
@@ -110,6 +119,9 @@ class TelegramBot:
 
         else:
             pass
+        context.bot.send_message(update.message.chat_id, text=text, reply_markup=ReplyKeyboardMarkup(
+            [[KeyboardButton(text="Поделиться номером телефона", request_contact=True)]], resize_keyboard=True,
+            one_time_keyboard=True))
         keyboard = [[
             InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -133,17 +145,14 @@ class TelegramBot:
                         [InlineKeyboardButton(text="Баку", callback_data='Баку')]]
             reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=f'{user.first_name} как здорово что тебе интересен наш вебинар: '
-                                          f'"Бот с искуственным интеллектом" 😁. '
-                                          f'Чтобы сказать тебе конкретное время старта занятия,'
-                                          f' нам нужно определить твой часовой пояс. Подскажи, из какого ты города?',
+                                     text=str(self.webinar.welcome_text).format(user.first_name),
                                      reply_markup=reply_markup)
             try:
                 tg_user = TelegramUser(user_id=update.message.chat_id,
                                        username=user.username,
                                        first_name=user.first_name,
                                        location='+6',
-                                       webinar=Webinar.objects.get())
+                                       webinar=self.webinar)
                 tg_user.save()
             except Exception as ex:
                 pass
@@ -151,16 +160,16 @@ class TelegramBot:
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',
                                      reply_markup=reply_markup)
+        else:
             context.bot.send_message(update.message.chat_id, text=text, reply_markup=ReplyKeyboardMarkup(
                 [[KeyboardButton(text="Поделиться номером телефона", request_contact=True)]], resize_keyboard=True,
                 one_time_keyboard=True))
-        else:
             context.bot.send_message(update.message.chat_id,
                                      text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
 
     @classmethod
     def handle_message(cls, update, context):
-        """функция эхл, отвечает на сообщение и передает их администратору"""
+        """функция эхo, отвечает на сообщение и передает их администратору"""
         message = update.message
         reply_to_message = message.reply_to_message
         text, manager = cls.get_message()
@@ -196,15 +205,26 @@ class TelegramBot:
         else:
             pass
 
+    @staticmethod
+    def delete_message(context: CallbackContext, chat_id, message_id):
+        context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+
     @classmethod
     def directions(cls, update, context):
-        keyboard = [[InlineKeyboardButton(text="Front-End", callback_data='Front-End')],
-                    [InlineKeyboardButton(text="Графический Дизайн", callback_data='Графический Дизайн')],
-                    [InlineKeyboardButton(text="UX/UI", callback_data='UX/UI')]]
+        keyboard = [[InlineKeyboardButton(
+                        text="Front-End",
+                        url='https://believencode.zenclass.ru/public/t/41ab81ec-85a9-4a67-a756-6328352adf9c')],
+                    [InlineKeyboardButton(
+                        text="Графический Дизайн",
+                        url='https://believencode.zenclass.ru/public/t/bd92a0c8-f7fa-4e08-9304-2324d7ff6adb')],
+                    [InlineKeyboardButton(
+                        text="UX/UI",
+                        url='https://believencode.zenclass.ru/public/t/69e08e7e-72b3-4ff4-a6f8-90773861bcc0')]]
         reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
-        context.bot.send_message(chat_id=update.effective_chat.id, text='Выберите направление:',
-                                 reply_markup=reply_markup)
-        update.callback_query.message.delete()
+        update.callback_query.message.reply_text(text='Выберите направление:',
+                                                 reply_markup=reply_markup)
+        update.callback_query.message.delete_message(context=context, chat_id=update.callback_query.message.chat_id,
+                                                     message_id=update.callback_querymessage.message_id)
 
     @classmethod
     def get_keyboard(cls, update):
@@ -212,8 +232,7 @@ class TelegramBot:
         keyboard = [["Рассылка"], ["Отправить подарок"]] if update in cls.get_admin() else []
         return ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
 
-    @classmethod
-    def get_phone_number(cls, update: Update, context: CallbackContext) -> None:
+    def get_phone_number(self, update: Update, context: CallbackContext) -> None:
         try:
             user = TelegramUser.objects.get(user_id=update.message.chat_id)
             user.phone_number = update.message.contact.phone_number
@@ -223,58 +242,43 @@ class TelegramBot:
                                         phone_number=update.message.contact.phone_number,
                                         first_name=update.message.from_user.first_name,
                                         location='+6',
-                                        webinar=Webinar.objects.get()
+                                        webinar=self.webinar
                                         )
         update.message.reply_text(f"Спасибо! Вы поделились номером телефона")
 
-    @classmethod
-    def button(cls, update, context: CallbackContext):
+    def button(self, update, context: CallbackContext):
         """Ловим ответ, какая кнопка была нажата"""
         try:
             query = update.callback_query
             variant = query.data
             instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
-            time = str(Webinar.objects.get().date_time)
-            formatted_date_time = convert_and_subtract_hours(time, 0)
-            text = lambda \
-                    text: f"Поздравляю тебя дорогой друг! Теперь ты записан на вебинар который состоится {text}" \
-                          f" по твоему времени. В день вебинара ты получишь ссылку на вебинар. Увидимся онлайн! 👾"
+            time = self.webinar.date_time
+            text = str(self.webinar.choose_text).format(time)
             match variant:
                 case 'Бишкек, Алматы':
                     instance.update(location='+6')
-                    query.edit_message_text(text=text(formatted_date_time))
+                    query.edit_message_text(text=text)
                 case 'Ташкент, Душанбе':
                     instance.update(location='+5')
-                    formatted_date_time = convert_and_subtract_hours(time, 1)
-                    query.edit_message_text(text=text(formatted_date_time))
+                    query.edit_message_text(text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=1)))
                 case 'Баку':
                     instance.update(location='+4')
-                    formatted_date_time = convert_and_subtract_hours(time, 2)
-                    query.edit_message_text(text=text(formatted_date_time))
+                    query.edit_message_text(text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=2)))
                 case 'discount':
                     context.bot.send_message(chat_id=update.callback_query.message.chat_id,
-                                             text='https://believencode.io/#billing-rate')
+                                             text='https://believencode.io/#billing-rate-promocode')
                     query.message.delete()
                 case 'one_day_free':
-                    cls.directions(update, context)
+                    self.directions(update, context)
                 case 'present':
-                    cls.present(update, context)
+                    self.present(update, context)
                 case 'send_all':
-                    cls.btn_pressed = True
-                    cls.broadcast(update, context)
-                case 'Front-End':
-                    context.bot.send_message(chat_id=update.callback_query.message.chat_id,
-                                             text='https://believencode.zenclass.ru/public/t/41ab81ec-85a9-4a67-a756-6328352adf9c')
-                    query.message.delete()
-                case 'UX/UI':
-                    context.bot.send_message(chat_id=update.callback_query.message.chat_id,
-                                             text='https://believencode.zenclass.ru/public/t/69e08e7e-72b3-4ff4-a6f8-90773861bcc0')
-                    query.message.delete()
-                case 'Графический Дизайн':
-                    context.bot.send_message(chat_id=update.callback_query.message.chat_id,
-                                             text='https://believencode.zenclass.ru/public/t/bd92a0c8-f7fa-4e08-9304-2324d7ff6adb')
-                    query.message.delete()
-            query.answer()
+                    self.btn_pressed = True
+                    self.broadcast(update, context)
+                # case 'request_contact':
+                #     reply_markup = InlineKeyboardMarkup(
+                #         [[InlineKeyboardButton("Поделиться контактом", callback_data='request_contact', request_contact=True)]])
+                #     query.edit_message_text("Нажмите на кнопку, чтобы поделиться контактом:", reply_markup=reply_markup)
         except Exception as ex:
             pass
 
