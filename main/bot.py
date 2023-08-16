@@ -248,7 +248,7 @@ class TelegramBot:
             query = update.callback_query
             variant = query.data
             instance = TelegramUser.objects.filter(user_id=update.callback_query.message.chat_id)
-            time = self.webinar.date_time
+            time = self.webinar.date_time.strftime('%d-%m-%Y %H:%M')
             text = str(self.webinar.choose_text).format(time)
             match variant:
                 case 'Бишкек, Алматы':
@@ -257,11 +257,11 @@ class TelegramBot:
                 case 'Ташкент, Душанбе':
                     instance.update(location='+5')
                     query.edit_message_text(
-                        text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=1)))
+                        text=str(self.webinar.choose_text).format((self.webinar.date_time - timedelta(hours=1)).strftime('%d-%m-%Y %H:%M')))
                 case 'Баку':
                     instance.update(location='+4')
                     query.edit_message_text(
-                        text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=2)))
+                        text=str(self.webinar.choose_text).format((self.webinar.date_time - timedelta(hours=2)).strftime('%d-%m-%Y %H:%M')))
                 case 'discount':
                     context.bot.send_message(chat_id=update.callback_query.message.chat_id,
                                              text='https://believencode.io/#billing-rate-promocode')
