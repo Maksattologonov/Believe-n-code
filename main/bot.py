@@ -113,15 +113,13 @@ class TelegramBot:
             keyboard = [
                 [InlineKeyboardButton("Рассылка", callback_data='send_all')],
                 [InlineKeyboardButton("Отправить подарки", callback_data='present')],
+                [InlineKeyboardButton("Получить номера", callback_data='numbers')],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Выберите действие:', reply_markup=reply_markup)
 
         else:
             pass
-        context.bot.send_message(update.message.chat_id, text=text, reply_markup=ReplyKeyboardMarkup(
-            [[KeyboardButton(text="Поделиться номером телефона", request_contact=True)]], resize_keyboard=True,
-            one_time_keyboard=True))
         keyboard = [[
             InlineKeyboardButton("Перейти к пользователю", url=f'https://t.me/{user.username}')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -160,10 +158,8 @@ class TelegramBot:
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',
                                      reply_markup=reply_markup)
+            context.bot.send_message(update.message.chat_id, text=text)
         else:
-            context.bot.send_message(update.message.chat_id, text=text, reply_markup=ReplyKeyboardMarkup(
-                [[KeyboardButton(text="Поделиться номером телефона", request_contact=True)]], resize_keyboard=True,
-                one_time_keyboard=True))
             context.bot.send_message(update.message.chat_id,
                                      text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
 
@@ -212,14 +208,14 @@ class TelegramBot:
     @classmethod
     def directions(cls, update, context):
         keyboard = [[InlineKeyboardButton(
-                        text="Front-End",
-                        url='https://believencode.zenclass.ru/public/t/41ab81ec-85a9-4a67-a756-6328352adf9c')],
-                    [InlineKeyboardButton(
-                        text="Графический Дизайн",
-                        url='https://believencode.zenclass.ru/public/t/bd92a0c8-f7fa-4e08-9304-2324d7ff6adb')],
-                    [InlineKeyboardButton(
-                        text="UX/UI",
-                        url='https://believencode.zenclass.ru/public/t/69e08e7e-72b3-4ff4-a6f8-90773861bcc0')]]
+            text="Front-End",
+            url='https://believencode.zenclass.ru/public/t/41ab81ec-85a9-4a67-a756-6328352adf9c')],
+            [InlineKeyboardButton(
+                text="Графический Дизайн",
+                url='https://believencode.zenclass.ru/public/t/bd92a0c8-f7fa-4e08-9304-2324d7ff6adb')],
+            [InlineKeyboardButton(
+                text="UX/UI",
+                url='https://believencode.zenclass.ru/public/t/69e08e7e-72b3-4ff4-a6f8-90773861bcc0')]]
         reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
         update.callback_query.message.reply_text(text='Выберите направление:',
                                                  reply_markup=reply_markup)
@@ -260,10 +256,12 @@ class TelegramBot:
                     query.edit_message_text(text=text)
                 case 'Ташкент, Душанбе':
                     instance.update(location='+5')
-                    query.edit_message_text(text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=1)))
+                    query.edit_message_text(
+                        text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=1)))
                 case 'Баку':
                     instance.update(location='+4')
-                    query.edit_message_text(text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=2)))
+                    query.edit_message_text(
+                        text=str(self.webinar.choose_text).format(self.webinar.date_time - timedelta(hours=2)))
                 case 'discount':
                     context.bot.send_message(chat_id=update.callback_query.message.chat_id,
                                              text='https://believencode.io/#billing-rate-promocode')
@@ -275,10 +273,14 @@ class TelegramBot:
                 case 'send_all':
                     self.btn_pressed = True
                     self.broadcast(update, context)
-                # case 'request_contact':
-                #     reply_markup = InlineKeyboardMarkup(
-                #         [[InlineKeyboardButton("Поделиться контактом", callback_data='request_contact', request_contact=True)]])
-                #     query.edit_message_text("Нажмите на кнопку, чтобы поделиться контактом:", reply_markup=reply_markup)
+                case 'numbers':
+                    update.callback_query.message.reply_text(text='Для связи с менеджером оставьте ваш номер телефона '
+                                                                  'нажав на кнопку Поделиться',
+                                                             reply_markup=ReplyKeyboardMarkup(
+                                                                 [[KeyboardButton(text="Поделиться",
+                                                                                  request_contact=True)]],
+                                                                 resize_keyboard=True,
+                                                                 one_time_keyboard=True))
         except Exception as ex:
             pass
 
