@@ -59,9 +59,9 @@ class TelegramBot:
         users = TelegramUser.objects.all()
         for i in users:
             try:
-                context.bot.send_message(chat_id=i.user_id, text=i.webinar.text)
+                context.bot.send_photo(chat_id=i.user_id, photo=i.webinar.image, caption=i.webinar.text)
             except Exception as ex:
-                pass
+                print("Error sending photo:", ex)
 
     @staticmethod
     def get_group_message():

@@ -100,6 +100,8 @@ class Webinar(models.Model):
                                              'наример: Привет {}!',
                                    default='ваш ответ записан. Вебинар начнется в {}')
     text = models.TextField(verbose_name='Текст напоминания')
+    image = models.ImageField(upload_to='media/webinar', verbose_name='Изображение для рассылки',
+                              help_text='формат обязательно jpeg, png, webp')
 
     class Meta:
         verbose_name = 'Вебинар'
