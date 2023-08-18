@@ -56,7 +56,6 @@ class TelegramBot:
 
     @staticmethod
     def send_all(context: CallbackContext):
-        print('send_all')
         users = TelegramUser.objects.all()
         for i in users:
             try:

@@ -108,7 +108,7 @@ class TelegramUser(models.Model):
     webinar = models.ForeignKey(Webinar, on_delete=models.DO_NOTHING, verbose_name='Вебинар')
 
     def __str__(self):
-        return self.username
+        return str(self.user_id)
 
     class Meta:
         verbose_name = 'Пользователи телеграм'
