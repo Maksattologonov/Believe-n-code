@@ -154,7 +154,7 @@ class TelegramBot:
                                        webinar=self.webinar)
                 tg_user.save()
             except Exception as ex:
-                pass
+                print(ex)
 
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',

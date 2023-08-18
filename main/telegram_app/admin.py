@@ -30,7 +30,8 @@ class TelegramBotAdmin(admin.ModelAdmin):
 
 
 class TelegramUserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'user_id', 'username')
+
 
 
 admin.site.register(TelegramGroup, TelegramGroupAdmin)
@@ -40,6 +41,5 @@ admin.site.register(InstallmentTelegram, InstallmentTelegramAdmin)
 admin.site.register(ContactUsTelegram, ContactUsTelegramAdmin)
 admin.site.register(TelegramBot, TelegramBotAdmin)
 admin.site.register(TelegramUser, TelegramUserAdmin)
-admin.site.register(TelegramAdmin, TelegramUserAdmin)
 
 admin.site.unregister(Group)
