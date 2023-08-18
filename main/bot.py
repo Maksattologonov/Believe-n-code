@@ -139,13 +139,6 @@ class TelegramBot:
                                      text="Добро пожаловать в Believe'n'code, чем я могу вам помочь?")
         elif update.message.text == '/start webinar':
             user = update.message.from_user
-            keyboard = [[InlineKeyboardButton(text="Бишкек, Алматы", callback_data='Бишкек, Алматы')],
-                        [InlineKeyboardButton(text="Ташкент, Душанбе", callback_data='Ташкент, Душанбе')],
-                        [InlineKeyboardButton(text="Баку", callback_data='Баку')]]
-            reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=str(self.webinar.welcome_text).format(user.first_name),
-                                     reply_markup=reply_markup)
             try:
                 tg_user = TelegramUser(user_id=update.message.chat_id,
                                        username=user.username,
@@ -155,6 +148,13 @@ class TelegramBot:
                 tg_user.save()
             except Exception as ex:
                 print(ex)
+            keyboard = [[InlineKeyboardButton(text="Бишкек, Алматы", callback_data='Бишкек, Алматы')],
+                        [InlineKeyboardButton(text="Ташкент, Душанбе", callback_data='Ташкент, Душанбе')],
+                        [InlineKeyboardButton(text="Баку", callback_data='Баку')]]
+            reply_markup = InlineKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=str(self.webinar.welcome_text).format(user.first_name),
+                                     reply_markup=reply_markup)
 
         elif not update.message['chat']['type'] == 'supergroup':
             context.bot.send_message(chat_id=int(manager), text=f'Пользователь {user.username} начал общение',

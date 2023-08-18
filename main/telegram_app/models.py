@@ -100,7 +100,7 @@ class InstallmentTelegram(models.Model):
 
 
 class TelegramUser(models.Model):
-    user_id = models.IntegerField(verbose_name='ID пользователя', unique=True)
+    user_id = models.BigIntegerField(verbose_name='ID пользователя', unique=True)
     username = models.CharField(verbose_name='Username', max_length=100, null=True)
     phone_number = models.CharField(verbose_name='Номер телефона', max_length=100)
     first_name = models.CharField(max_length=100, verbose_name='Имя')
