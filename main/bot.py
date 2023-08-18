@@ -56,6 +56,7 @@ class TelegramBot:
 
     @staticmethod
     def send_all(context: CallbackContext):
+        print('send_all')
         users = TelegramUser.objects.all()
         for i in users:
             try:
@@ -192,12 +193,11 @@ class TelegramBot:
     def error(cls, update: Update, context: CallbackContext) -> None:
         logger.warning('Update "%s" caused error "%s"', update, context.error)
 
-    @classmethod
-    def broadcast(cls, update, context):
+    def broadcast(self, update, context):
         """функция рассылки работает только с админ id"""
-        if update.callback_query.message.chat_id in cls.get_admin() and cls.btn_pressed:
+        if self.btn_pressed:
             update.callback_query.message.reply_text("Рассылка сообщений начата!")
-            cls.send_all(context)
+            self.send_all(context)
         else:
             pass
 
